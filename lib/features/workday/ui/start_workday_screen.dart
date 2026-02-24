@@ -1,91 +1,61 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import '../state/workday_state.dart';
+import '../../../shared/widgets/app_scaffold.dart';
 
-/// Screen to confirm and start a new workday (clock in).
-class StartWorkdayScreen extends StatefulWidget {
+class StartWorkdayScreen extends ConsumerStatefulWidget {
   const StartWorkdayScreen({super.key});
 
   @override
-  State<StartWorkdayScreen> createState() => _StartWorkdayScreenState();
+  ConsumerState<StartWorkdayScreen> createState() => _StartWorkdayScreenState();
 }
 
-class _StartWorkdayScreenState extends State<StartWorkdayScreen> {
-  final _notesController = TextEditingController();
-
-  @override
-  void dispose() {
-    _notesController.dispose();
-    super.dispose();
-  }
-
-  void _startWorkday() {
-    // TODO: Persist via workday_provider / workday_state
-    Navigator.of(context).pop(true);
-  }
+class _StartWorkdayScreenState extends ConsumerState<StartWorkdayScreen> {
+  bool confirm = false;
+  bool gpsValidation = false;
 
   @override
   Widget build(BuildContext context) {
-    final now = DateTime.now();
-    final timeStr =
-        '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}';
-    final dateStr =
-        '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
-
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Start workday'),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  children: [
-                    Icon(
-                      Icons.schedule,
-                      size: 48,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      timeStr,
-                      style: Theme.of(context).textTheme.headlineMedium,
-                    ),
-                    Text(
-                      dateStr,
-                      style: Theme.of(context).textTheme.bodyLarge,
-                    ),
-                  ],
+    return AppScaffold(
+      title: 'Start Workday',
+      body: ListView(
+        children: [
+          const SizedBox(height: 8),
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                const Text('You must confirm to start your workday.'),
+                const SizedBox(height: 12),
+                CheckboxListTile(
+                  value: confirm,
+                  onChanged: (v) => setState(() => confirm = v ?? false),
+                  title: const Text('I confirm I am starting my workday now'),
+                  controlAffinity: ListTileControlAffinity.leading,
                 ),
-              ),
+                SwitchListTile(
+                  value: gpsValidation,
+                  onChanged: (v) => setState(() => gpsValidation = v),
+                  title: const Text('GPS validation at start (UI only)'),
+                ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton(
+                    onPressed: !confirm
+                        ? null
+                        : () {
+                            ref.read(workdayProvider.notifier).start();
+                            context.go('/home');
+                          },
+                    child: const Text('Start Workday'),
+                  ),
+                ),
+              ]),
             ),
-            const SizedBox(height: 24),
-            TextFormField(
-              controller: _notesController,
-              decoration: const InputDecoration(
-                labelText: 'Notes (optional)',
-                border: OutlineInputBorder(),
-                hintText: 'e.g. route, vehicle',
-              ),
-              maxLines: 3,
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton.icon(
-              onPressed: _startWorkday,
-              icon: const Icon(Icons.play_arrow),
-              label: const Text('Clock in'),
-            ),
-            const SizedBox(height: 8),
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(false),
-              child: const Text('Cancel'),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

@@ -1,68 +1,26 @@
-/// Status of a workday session.
-enum WorkdayStatus {
-  notStarted,
-  inProgress,
-  completed,
-}
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// Represents a single workday record (clock in/out, date).
-class Workday {
-  const Workday({
-    required this.id,
-    required this.date,
-    this.clockIn,
-    this.clockOut,
-    this.status = WorkdayStatus.notStarted,
-  });
-
-  final String id;
-  final DateTime date;
-  final DateTime? clockIn;
-  final DateTime? clockOut;
-  final WorkdayStatus status;
-
-  Workday copyWith({
-    String? id,
-    DateTime? date,
-    DateTime? clockIn,
-    DateTime? clockOut,
-    WorkdayStatus? status,
-  }) {
-    return Workday(
-      id: id ?? this.id,
-      date: date ?? this.date,
-      clockIn: clockIn ?? this.clockIn,
-      clockOut: clockOut ?? this.clockOut,
-      status: status ?? this.status,
-    );
-  }
-}
-
-/// Holds the workday feature state (current session + history).
 class WorkdayState {
-  const WorkdayState({
-    this.currentWorkday,
-    this.workdays = const [],
-    this.isLoading = false,
-    this.error,
-  });
+  final bool started;
+  final DateTime? startedAt;
 
-  final Workday? currentWorkday;
-  final List<Workday> workdays;
-  final bool isLoading;
-  final String? error;
+  const WorkdayState({required this.started, this.startedAt});
 
-  WorkdayState copyWith({
-    Workday? currentWorkday,
-    List<Workday>? workdays,
-    bool? isLoading,
-    String? error,
-  }) {
+  WorkdayState copyWith({bool? started, DateTime? startedAt}) {
     return WorkdayState(
-      currentWorkday: currentWorkday ?? this.currentWorkday,
-      workdays: workdays ?? this.workdays,
-      isLoading: isLoading ?? this.isLoading,
-      error: error,
+      started: started ?? this.started,
+      startedAt: startedAt ?? this.startedAt,
     );
   }
 }
+
+class WorkdayNotifier extends StateNotifier<WorkdayState> {
+  WorkdayNotifier() : super(const WorkdayState(started: false));
+
+  void start() => state = state.copyWith(started: true, startedAt: DateTime.now());
+  void reset() => state = const WorkdayState(started: false);
+}
+
+final workdayProvider = StateNotifierProvider<WorkdayNotifier, WorkdayState>((ref) {
+  return WorkdayNotifier();
+});

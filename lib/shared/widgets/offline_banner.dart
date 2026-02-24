@@ -1,38 +1,39 @@
+// import 'package:flutter/material.dart';
+// import '../models/driver.dart';
+
+// class StatusBadge extends StatelessWidget {
+//   final DriverStatus status;
+//   const StatusBadge({super.key, required this.status});
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final (label, color) = switch (status) {
+//       DriverStatus.pending => ('Pending', Colors.orange),
+//       DriverStatus.underVerification => ('Under verification', Colors.blue),
+//       DriverStatus.approved => ('Approved', Colors.green),
+//       DriverStatus.rejected => ('Rejected', Colors.red),
+//       DriverStatus.suspended => ('Suspended', Colors.redAccent),
+//     };
+
+//     return Container(
+//       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+//       decoration: BoxDecoration(
+//         color: color.withOpacity(0.12),
+//         borderRadius: BorderRadius.circular(999),
+//         border: Border.all(color: color.withOpacity(0.3)),
+//       ),
+//       child: Text(label, style: TextStyle(color: color, fontWeight: FontWeight.w600)),
+//     );
+//   }
+// }
+
 import 'package:flutter/material.dart';
 
 class OfflineBanner extends StatelessWidget {
-  final bool offline;
-  final String message;
-
-  const OfflineBanner({
-    super.key,
-    required this.offline,
-    this.message = 'You are offline',
-  });
+  const OfflineBanner({super.key});
 
   @override
   Widget build(BuildContext context) {
-    if (!offline) return const SizedBox.shrink();
-
-    return Container(
-      width: double.infinity,
-      color: Colors.red.shade700,
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-      child: Row(
-        children: [
-          const Icon(Icons.signal_wifi_off, color: Colors.white, size: 18),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              message,
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
+    return const SizedBox.shrink(); // placeholder banner
   }
 }

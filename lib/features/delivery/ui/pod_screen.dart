@@ -1,72 +1,65 @@
 import 'package:flutter/material.dart';
+import '../../../shared/widgets/app_scaffold.dart';
 
-/// Proof of Delivery (POD) screen for confirming a completed delivery.
-class PodScreen extends StatefulWidget {
-  const PodScreen({super.key});
+class PodScreen extends StatelessWidget {
+  final String routeId;
+  final String stopId;
 
-  @override
-  State<PodScreen> createState() => _PodScreenState();
-}
-
-class _PodScreenState extends State<PodScreen> {
-  final _recipientController = TextEditingController();
-  final _notesController = TextEditingController();
-  bool _recipientPresent = true;
-
-  @override
-  void dispose() {
-    _recipientController.dispose();
-    _notesController.dispose();
-    super.dispose();
-  }
-
-  void _submit() {
-    // TODO: Persist POD data via delivery_provider.
-    Navigator.of(context).pop(true);
-  }
+  const PodScreen({super.key, required this.routeId, required this.stopId});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Proof of Delivery'),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            SwitchListTile(
-              value: _recipientPresent,
-              title: const Text('Recipient present'),
-              onChanged: (v) => setState(() => _recipientPresent = v),
+    return AppScaffold(
+      title: 'Proof of Delivery',
+      body: ListView(
+        children: [
+          const SizedBox(height: 8),
+          Card(
+            child: ListTile(
+              title: const Text('POD Evidence (UI placeholders)'),
+              subtitle: Text('Route: $routeId • Stop: $stopId'),
             ),
-            const SizedBox(height: 12),
-            TextFormField(
-              controller: _recipientController,
-              decoration: const InputDecoration(
-                labelText: 'Recipient name',
-                border: OutlineInputBorder(),
+          ),
+          Card(
+            child: Column(
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.photo_camera_outlined),
+                  title: const Text('Photo capture'),
+                  trailing: OutlinedButton(onPressed: () {}, child: const Text('Capture')),
+                ),
+                const Divider(height: 1),
+                ListTile(
+                  leading: const Icon(Icons.draw_outlined),
+                  title: const Text('Recipient signature'),
+                  trailing: OutlinedButton(onPressed: () {}, child: const Text('Sign')),
+                ),
+                const Divider(height: 1),
+                const Padding(
+                  padding: EdgeInsets.all(16),
+                  child: TextField(decoration: InputDecoration(labelText: 'Recipient ID (UI)')),
+                ),
+                const Padding(
+                  padding: EdgeInsets.fromLTRB(16, 0, 16, 16),
+                  child: TextField(
+                    maxLines: 3,
+                    decoration: InputDecoration(labelText: 'Notes (optional)'),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: FilledButton(
+              onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Delivered + POD saved (mock)')),
               ),
+              child: const Text('Submit POD'),
             ),
-            const SizedBox(height: 12),
-            TextFormField(
-              controller: _notesController,
-              maxLines: 3,
-              decoration: const InputDecoration(
-                labelText: 'Notes (optional)',
-                hintText: 'e.g. left at front desk',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: _submit,
-              child: const Text('Confirm delivery'),
-            ),
-          ],
-        ),
+          ),
+          const SizedBox(height: 20),
+        ],
       ),
     );
   }

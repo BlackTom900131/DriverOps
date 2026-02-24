@@ -1,65 +1,55 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../shared/widgets/app_scaffold.dart';
+import '../../offline_queue/state/offline_queue_state.dart';
 
-/// Pickup screen for viewing upcoming and active pickups.
-class PickupScreen extends StatefulWidget {
-  const PickupScreen({super.key});
+class PickupScreen extends ConsumerWidget {
+  final String routeId;
+  final String stopId;
 
-  @override
-  State<PickupScreen> createState() => _PickupScreenState();
-}
-
-class _PickupScreenState extends State<PickupScreen> {
-  bool _showOnlyToday = true;
+  const PickupScreen({super.key, required this.routeId, required this.stopId});
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Pickups'),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-      ),
-      body: Column(
+  Widget build(BuildContext context, WidgetRef ref) {
+    return AppScaffold(
+      title: 'Pickup — $stopId',
+      body: ListView(
         children: [
+          const SizedBox(height: 8),
+          Card(
+            child: ListTile(
+              title: const Text('Pickup Point Info (mock)'),
+              subtitle: Text('Route: $routeId\nStop: $stopId\nExpected packages: 5'),
+              isThreeLine: true,
+            ),
+          ),
+          Card(
+            child: ListTile(
+              leading: const Icon(Icons.qr_code_scanner),
+              title: const Text('Scan package (UI only)'),
+              subtitle: const Text('Barcode/QR scanning required (mock).'),
+              trailing: FilledButton(
+                onPressed: () {
+                  // Add an offline queue mock event
+                  ref.read(offlineQueueProvider.notifier).addMockEvent();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Scanned (mock) — queued event +1')),
+                  );
+                },
+                child: const Text('Scan'),
+              ),
+            ),
+          ),
           Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  _showOnlyToday ? 'Today\'s pickups' : 'All pickups',
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                Switch.adaptive(
-                  value: _showOnlyToday,
-                  onChanged: (v) {
-                    setState(() => _showOnlyToday = v);
-                  },
-                ),
-              ],
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: FilledButton(
+              onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Pickup stop closed (mock)')),
+              ),
+              child: const Text('Close pickup stop (requires confirmation in real app)'),
             ),
           ),
-          const Divider(height: 1),
-          Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: 5,
-              itemBuilder: (context, index) {
-                return Card(
-                  margin: const EdgeInsets.only(bottom: 8),
-                  child: ListTile(
-                    leading: const Icon(Icons.local_shipping),
-                    title: Text('Pickup #${index + 1}'),
-                    subtitle: const Text('Location: TBD\nTime: TBD'),
-                    isThreeLine: true,
-                    trailing: const Icon(Icons.chevron_right),
-                    onTap: () {
-                      // TODO: Navigate to a pickup detail screen when added.
-                    },
-                  ),
-                );
-              },
-            ),
-          ),
+          const SizedBox(height: 20),
         ],
       ),
     );

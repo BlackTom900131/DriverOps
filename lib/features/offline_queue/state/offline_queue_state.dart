@@ -1,77 +1,29 @@
-/// Status of a queued item (e.g. pending sync, syncing, failed).
-enum QueuedItemStatus {
-  pending,
-  syncing,
-  failed,
-}
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// Type of action to sync when back online.
-enum QueuedActionType {
-  delivery,
-  pickup,
-  pod,
-  workday,
-  other,
-}
-
-/// A single item in the offline queue (action to sync).
-class QueuedItem {
-  const QueuedItem({
-    required this.id,
-    required this.actionType,
-    required this.payload,
-    this.status = QueuedItemStatus.pending,
-    this.createdAt,
-    this.lastError,
-  });
-
-  final String id;
-  final QueuedActionType actionType;
-  final Map<String, dynamic> payload;
-  final QueuedItemStatus status;
-  final DateTime? createdAt;
-  final String? lastError;
-
-  QueuedItem copyWith({
-    String? id,
-    QueuedActionType? actionType,
-    Map<String, dynamic>? payload,
-    QueuedItemStatus? status,
-    DateTime? createdAt,
-    String? lastError,
-  }) {
-    return QueuedItem(
-      id: id ?? this.id,
-      actionType: actionType ?? this.actionType,
-      payload: payload ?? this.payload,
-      status: status ?? this.status,
-      createdAt: createdAt ?? this.createdAt,
-      lastError: lastError ?? this.lastError,
-    );
-  }
-}
-
-/// Holds the offline queue feature state.
 class OfflineQueueState {
-  const OfflineQueueState({
-    this.items = const [],
-    this.isSyncing = false,
-    this.error,
-  });
+  final bool isOffline;
+  final int pendingEvents;
 
-  final List<QueuedItem> items;
-  final bool isSyncing;
-  final String? error;
+  const OfflineQueueState({required this.isOffline, required this.pendingEvents});
 
-  OfflineQueueState copyWith({
-    List<QueuedItem>? items,
-    bool? isSyncing,
-    String? error,
-  }) {
+  OfflineQueueState copyWith({bool? isOffline, int? pendingEvents}) {
     return OfflineQueueState(
-      items: items ?? this.items,
-      isSyncing: isSyncing ?? this.isSyncing,
-      error: error,
+      isOffline: isOffline ?? this.isOffline,
+      pendingEvents: pendingEvents ?? this.pendingEvents,
     );
   }
 }
+
+class OfflineQueueNotifier extends StateNotifier<OfflineQueueState> {
+  OfflineQueueNotifier() : super(const OfflineQueueState(isOffline: false, pendingEvents: 0));
+
+  void toggleOffline() => state = state.copyWith(isOffline: !state.isOffline);
+
+  void addMockEvent() => state = state.copyWith(pendingEvents: state.pendingEvents + 1);
+
+  void clear() => state = state.copyWith(pendingEvents: 0);
+}
+
+final offlineQueueProvider = StateNotifierProvider<OfflineQueueNotifier, OfflineQueueState>((ref) {
+  return OfflineQueueNotifier();
+});

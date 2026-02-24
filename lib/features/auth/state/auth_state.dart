@@ -1,52 +1,75 @@
-import 'package:flutter/foundation.dart';
+// mock auth state
+import 'dart:async';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../shared/models/driver.dart';
 
-class AuthState extends ChangeNotifier {
-  bool isAuthenticated = false;
-  String? userId;
-  String? token;
-  bool isLoading = false;
-  String? error;
+class AuthState {
+  final bool isLoggedIn;
+  final DriverStatus driverStatus;
+  final String driverName;
+  final String? rejectionReason;
 
-  void setLoading(bool value) {
-    isLoading = value;
-    notifyListeners();
+  const AuthState({
+    required this.isLoggedIn,
+    required this.driverStatus,
+    required this.driverName,
+    this.rejectionReason,
+  });
+
+  AuthState copyWith({
+    bool? isLoggedIn,
+    DriverStatus? driverStatus,
+    String? driverName,
+    String? rejectionReason,
+  }) {
+    return AuthState(
+      isLoggedIn: isLoggedIn ?? this.isLoggedIn,
+      driverStatus: driverStatus ?? this.driverStatus,
+      driverName: driverName ?? this.driverName,
+      rejectionReason: rejectionReason ?? this.rejectionReason,
+    );
+  }
+}
+
+class AuthStateNotifier extends StateNotifier<AuthState> {
+  final _controller = StreamController<AuthState>.broadcast();
+  Stream<AuthState> get stream => _controller.stream;
+
+  AuthStateNotifier()
+      : super(const AuthState(
+          isLoggedIn: false,
+          driverStatus: DriverStatus.pending,
+          driverName: 'Driver',
+          rejectionReason: null,
+        ));
+
+  void _emit(AuthState s) {
+    state = s;
+    _controller.add(s);
   }
 
-  void setError(String? message) {
-    error = message;
-    notifyListeners();
-  }
-
-  void login({required String userId, required String token}) {
-    this.userId = userId;
-    this.token = token;
-    isAuthenticated = true;
-    error = null;
-    notifyListeners();
+  void mockLogin(String name) {
+    // Default to "Pending" to enforce the status gate until you "approve" in UI.
+    _emit(state.copyWith(isLoggedIn: true, driverName: name));
   }
 
   void logout() {
-    userId = null;
-    token = null;
-    isAuthenticated = false;
-    error = null;
-    notifyListeners();
+    _emit(const AuthState(isLoggedIn: false, driverStatus: DriverStatus.pending, driverName: 'Driver'));
   }
 
-  Map<String, dynamic> toJson() => {
-    'isAuthenticated': isAuthenticated,
-    'userId': userId,
-    'token': token,
-    'isLoading': isLoading,
-    'error': error,
-  };
+  void setStatus(DriverStatus status, {String? rejectionReason}) {
+    _emit(state.copyWith(driverStatus: status, rejectionReason: rejectionReason));
+  }
 
-  factory AuthState.fromJson(Map<String, dynamic> json) {
-    return AuthState()
-      ..isAuthenticated = json['isAuthenticated'] as bool? ?? false
-      ..userId = json['userId'] as String?
-      ..token = json['token'] as String?
-      ..isLoading = json['isLoading'] as bool? ?? false
-      ..error = json['error'] as String?;
+  @override
+  void dispose() {
+    _controller.close();
+    super.dispose();
   }
 }
+
+final authStateProvider = StateNotifierProvider<AuthStateNotifier, AuthState>((ref) {
+  return AuthStateNotifier();
+});
+
+// enum DriverStatus { pending, underVerification, approved, rejected, suspended }

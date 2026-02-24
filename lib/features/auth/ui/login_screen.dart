@@ -1,90 +1,78 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import '../state/auth_state.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-  bool _loading = false;
+  final _name = TextEditingController(text: 'Razak');
+  final _email = TextEditingController(text: 'driver@company.com');
+  final _pass = TextEditingController(text: 'password');
 
   @override
   void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
+    _name.dispose();
+    _email.dispose();
+    _pass.dispose();
     super.dispose();
-  }
-
-  void _submit() async {
-    if (!_formKey.currentState!.validate()) return;
-    setState(() => _loading = true);
-    await Future.delayed(const Duration(seconds: 1));
-    setState(() => _loading = false);
-
-    // Simple placeholder: navigate to home on "success"
-    if (mounted) Navigator.pushNamed(context, '/home');
-  }
-
-  String? _validateEmail(String? v) {
-    if (v == null || v.trim().isEmpty) return 'Email required';
-    if (!RegExp(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}").hasMatch(v))
-      return 'Invalid email';
-    return null;
-  }
-
-  String? _validatePassword(String? v) {
-    if (v == null || v.isEmpty) return 'Password required';
-    if (v.length < 6) return 'Password too short';
-    return null;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Login')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 420),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
+      appBar: AppBar(title: const Text('Driver Ops — Login')),
+      body: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 520),
+          child: Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Form(
+                key: _formKey,
+                child: Column(mainAxisSize: MainAxisSize.min, children: [
                   TextFormField(
-                    controller: _emailController,
-                    decoration: const InputDecoration(labelText: 'Email'),
-                    keyboardType: TextInputType.emailAddress,
-                    validator: _validateEmail,
+                    controller: _name,
+                    decoration: const InputDecoration(labelText: 'Driver name (mock)'),
+                    validator: (v) => (v == null || v.trim().isEmpty) ? 'Required' : null,
                   ),
                   const SizedBox(height: 12),
                   TextFormField(
-                    controller: _passwordController,
+                    controller: _email,
+                    decoration: const InputDecoration(labelText: 'Email'),
+                    validator: (v) => (v == null || !v.contains('@')) ? 'Enter a valid email' : null,
+                  ),
+                  const SizedBox(height: 12),
+                  TextFormField(
+                    controller: _pass,
                     decoration: const InputDecoration(labelText: 'Password'),
                     obscureText: true,
-                    validator: _validatePassword,
+                    validator: (v) => (v == null || v.length < 3) ? 'Too short' : null,
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 16),
                   SizedBox(
                     width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: _loading ? null : _submit,
-                      child: _loading
-                          ? const SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : const Text('Login'),
+                    child: FilledButton(
+                      onPressed: () {
+                        if (!_formKey.currentState!.validate()) return;
+                        ref.read(authStateProvider.notifier).mockLogin(_name.text.trim());
+                        context.go('/home');
+                      },
+                      child: const Text('Login (mock)'),
                     ),
                   ),
-                ],
+                  const SizedBox(height: 8),
+                  TextButton(
+                    onPressed: () => context.go('/registration'),
+                    child: const Text('New driver? Register'),
+                  ),
+                ]),
               ),
             ),
           ),

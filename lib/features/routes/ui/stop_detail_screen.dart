@@ -1,86 +1,65 @@
 import 'package:flutter/material.dart';
-import '../state/routes_state.dart';
+import 'package:go_router/go_router.dart';
+import '../../../shared/widgets/app_scaffold.dart';
 
-/// Detail for a single stop on a route.
 class StopDetailScreen extends StatelessWidget {
-  const StopDetailScreen({
-    super.key,
-    required this.route,
-    required this.stop,
-  });
+  final String routeId;
+  final String stopId;
 
-  final RouteRecord route;
-  final RouteStop stop;
+  const StopDetailScreen({super.key, required this.routeId, required this.stopId});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(stop.name),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-      ),
+    return AppScaffold(
+      title: 'Stop $stopId',
       body: ListView(
-        padding: const EdgeInsets.all(16),
         children: [
+          const SizedBox(height: 8),
           Card(
             child: Padding(
               padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _DetailRow(label: 'Route', value: route.name),
-                  _DetailRow(label: 'Stop', value: '${stop.sequenceIndex + 1}'),
-                  _DetailRow(label: 'Name', value: stop.name),
-                  if (stop.address != null && stop.address!.isNotEmpty)
-                    _DetailRow(label: 'Address', value: stop.address!),
-                  if (stop.arrivedAt != null)
-                    _DetailRow(
-                      label: 'Arrived',
-                      value: _formatDateTime(stop.arrivedAt!),
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text('Route: $routeId', style: Theme.of(context).textTheme.titleMedium),
+                const SizedBox(height: 6),
+                Text('Stop: $stopId'),
+                const SizedBox(height: 12),
+                const Text('Stop actions (UI):'),
+                const SizedBox(height: 12),
+                Wrap(spacing: 10, runSpacing: 10, children: [
+                  FilledButton.icon(
+                    onPressed: () => context.go('/home/routes/$routeId/stops/$stopId/pickup'),
+                    icon: const Icon(Icons.qr_code_scanner),
+                    label: const Text('Pickup'),
+                  ),
+                  FilledButton.icon(
+                    onPressed: () => context.go('/home/routes/$routeId/stops/$stopId/delivery'),
+                    icon: const Icon(Icons.local_shipping_outlined),
+                    label: const Text('Delivery'),
+                  ),
+                ]),
+                const SizedBox(height: 12),
+                OutlinedButton(
+                  onPressed: () => showDialog(
+                    context: context,
+                    builder: (_) => AlertDialog(
+                      title: const Text('Skipping stop'),
+                      content: const Text('Skipping is restricted. Provide justification (UI placeholder).'),
+                      actions: [
+                        TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+                        FilledButton(onPressed: () => Navigator.pop(context), child: const Text('Submit')),
+                      ],
                     ),
-                  if (stop.completedAt != null)
-                    _DetailRow(
-                      label: 'Completed',
-                      value: _formatDateTime(stop.completedAt!),
-                    ),
-                ],
-              ),
+                  ),
+                  child: const Text('Attempt to skip stop (shows restriction)'),
+                ),
+              ]),
             ),
           ),
+          
         ],
-      ),
-    );
-  }
 
-  String _formatDateTime(DateTime d) {
-    return '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')} '
-        '${d.hour.toString().padLeft(2, '0')}:${d.minute.toString().padLeft(2, '0')}';
-  }
-}
-
-class _DetailRow extends StatelessWidget {
-  const _DetailRow({required this.label, required this.value});
-
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: 100,
-            child: Text(
-              label,
-              style: const TextStyle(fontWeight: FontWeight.w500),
-            ),
-          ),
-          Expanded(child: Text(value)),
-        ],
       ),
     );
   }
 }
+

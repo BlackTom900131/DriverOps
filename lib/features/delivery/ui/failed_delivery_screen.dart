@@ -1,60 +1,79 @@
 import 'package:flutter/material.dart';
+import '../../../shared/widgets/app_scaffold.dart';
 
-/// Screen for capturing a failed delivery attempt.
 class FailedDeliveryScreen extends StatefulWidget {
-  const FailedDeliveryScreen({super.key});
+  final String routeId;
+  final String stopId;
+
+  const FailedDeliveryScreen({super.key, required this.routeId, required this.stopId});
 
   @override
   State<FailedDeliveryScreen> createState() => _FailedDeliveryScreenState();
 }
 
 class _FailedDeliveryScreenState extends State<FailedDeliveryScreen> {
-  final _reasonController = TextEditingController();
-
-  @override
-  void dispose() {
-    _reasonController.dispose();
-    super.dispose();
-  }
-
-  void _submit() {
-    // TODO: Persist failed delivery reason via delivery_provider.
-    Navigator.of(context).pop(true);
-  }
+  String reason = 'Customer not available';
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Failed Delivery'),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const Text(
-              'Describe why the delivery failed:',
-              style: TextStyle(fontWeight: FontWeight.w600),
+    return AppScaffold(
+      title: 'Failed Delivery',
+      body: ListView(
+        children: [
+          const SizedBox(height: 8),
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text('Route: ${widget.routeId} • Stop: ${widget.stopId}'),
+                const SizedBox(height: 12),
+                DropdownButtonFormField<String>(
+                  value: reason,
+                  items: const [
+                    'Customer not available',
+                    'Incorrect address',
+                    'Refused by customer',
+                    'Other (requires note)',
+                  ].map((s) => DropdownMenuItem(value: s, child: Text(s))).toList(),
+                  onChanged: (v) => setState(() => reason = v ?? reason),
+                  decoration: const InputDecoration(labelText: 'Reason'),
+                ),
+                const SizedBox(height: 12),
+                const TextField(
+                  maxLines: 3,
+                  decoration: InputDecoration(labelText: 'Note (required for "Other")'),
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    OutlinedButton.icon(
+                      onPressed: () {},
+                      icon: const Icon(Icons.photo_camera_outlined),
+                      label: const Text('Add photo'),
+                    ),
+                    const SizedBox(width: 10),
+                    Text(
+                      'Evidence required by config (UI)',
+                      style: TextStyle(color: Colors.grey.shade700),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 14),
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton(
+                    onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Incident/ticket created (mock)')),
+                    ),
+                    child: const Text('Submit failure'),
+                  ),
+                ),
+              ]),
             ),
-            const SizedBox(height: 12),
-            TextFormField(
-              controller: _reasonController,
-              maxLines: 4,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                hintText: 'e.g. customer not at home, wrong address',
-              ),
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: _submit,
-              child: const Text('Save failed delivery'),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 }
+

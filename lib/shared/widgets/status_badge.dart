@@ -1,45 +1,28 @@
 import 'package:flutter/material.dart';
-
-enum StatusBadgeType { success, warning, error, info }
+import '../models/driver.dart';
 
 class StatusBadge extends StatelessWidget {
-  final String text;
-  final StatusBadgeType type;
-
-  const StatusBadge({
-    super.key,
-    required this.text,
-    this.type = StatusBadgeType.info,
-  });
-
-  Color _color(BuildContext context) {
-    switch (type) {
-      case StatusBadgeType.success:
-        return Colors.green;
-      case StatusBadgeType.warning:
-        return Colors.orange;
-      case StatusBadgeType.error:
-        return Colors.red;
-      case StatusBadgeType.info:
-      default:
-        return Theme.of(context).colorScheme.primary;
-    }
-  }
+  final DriverStatus status;
+  StatusBadge({super.key, required this.status});
 
   @override
   Widget build(BuildContext context) {
-    final c = _color(context);
+    final (label, color) = switch (status) {
+      DriverStatus.pending => ('Pending', Colors.orange),
+      DriverStatus.underVerification => ('Under verification', Colors.blue),
+      DriverStatus.approved => ('Approved', Colors.green),
+      DriverStatus.rejected => ('Rejected', Colors.red),
+      DriverStatus.suspended => ('Suspended', Colors.redAccent),
+    };
+
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: c.withOpacity(0.12),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: c.withOpacity(0.2)),
+        color: color.withOpacity(0.12),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: color.withOpacity(0.3)),
       ),
-      child: Text(
-        text,
-        style: TextStyle(color: c, fontWeight: FontWeight.w600, fontSize: 12),
-      ),
+      child: Text(label, style: TextStyle(color: color, fontWeight: FontWeight.w600)),
     );
   }
 }
