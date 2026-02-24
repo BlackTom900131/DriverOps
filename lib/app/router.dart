@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -24,7 +25,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 
   return GoRouter(
     initialLocation: '/login',
-    refreshListenable: GoRouterRefreshStream(ref.watch(authStateProvider.notifier).stream),
+    refreshListenable: GoRouterRefreshStream(
+      ref.watch(authStateProvider.notifier).stream,
+    ),
     redirect: (context, state) {
       final loggingIn = state.matchedLocation == '/login';
 
@@ -39,42 +42,42 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       // Driver status gate: only Approved can operate
       if (auth.driverStatus != DriverStatus.approved) {
         // Allow registration screen even if not approved.
-        final onRegistration = state.matchedLocation.startsWith('/registration');
+        final onRegistration = state.matchedLocation.startsWith(
+          '/registration',
+        );
         if (!onRegistration) return '/registration';
       }
 
       return null;
     },
     routes: [
-      GoRoute(
-        path: '/login',
-        builder: (_, __) => const LoginScreen(),
-      ),
+      GoRoute(path: '/login', builder: (_, _) => const LoginScreen()),
       GoRoute(
         path: '/registration',
-        builder: (_, __) => const RegistrationStepperScreen(),
+        builder: (_, _) => const RegistrationStepperScreen(),
         routes: [
           GoRoute(
             path: 'documents',
-            builder: (_, __) => const DocumentUploadScreen(),
+            builder: (_, _) => const DocumentUploadScreen(),
           ),
         ],
       ),
       GoRoute(
         path: '/home',
-        builder: (_, __) => const HomeScreen(),
+        builder: (_, _) => const HomeScreen(),
         routes: [
           GoRoute(
             path: 'start-workday',
-            builder: (_, __) => const StartWorkdayScreen(),
+            builder: (_, _) => const StartWorkdayScreen(),
           ),
           GoRoute(
             path: 'routes',
-            builder: (_, __) => const RoutesListScreen(),
+            builder: (_, _) => const RoutesListScreen(),
             routes: [
               GoRoute(
                 path: ':routeId',
-                builder: (_, s) => RouteDetailScreen(routeId: s.pathParameters['routeId']!),
+                builder: (_, s) =>
+                    RouteDetailScreen(routeId: s.pathParameters['routeId']!),
                 routes: [
                   GoRoute(
                     path: 'stops/:stopId',
@@ -121,12 +124,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           ),
           GoRoute(
             path: 'offline-queue',
-            builder: (_, __) => const OfflineQueueScreen(),
+            builder: (_, _) => const OfflineQueueScreen(),
           ),
-          GoRoute(
-            path: 'profile',
-            builder: (_, __) => const ProfileScreen(),
-          ),
+          GoRoute(path: 'profile', builder: (_, _) => const ProfileScreen()),
         ],
       ),
     ],
@@ -151,6 +151,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 // }
 class GoRouterRefreshStream extends ChangeNotifier {
   GoRouterRefreshStream(Stream<dynamic> stream) {
-    stream.asBroadcastStream().listen((_) => notifyListeners());
+    _sub = stream.asBroadcastStream().listen((_) => notifyListeners());
+  }
+  late final StreamSubscription<dynamic> _sub;
+
+  @override
+  void dispose() {
+    _sub.cancel();
+    super.dispose();
   }
 }

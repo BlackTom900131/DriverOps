@@ -33,15 +33,18 @@ class AuthState {
 
 class AuthStateNotifier extends StateNotifier<AuthState> {
   final _controller = StreamController<AuthState>.broadcast();
+  @override
   Stream<AuthState> get stream => _controller.stream;
 
   AuthStateNotifier()
-      : super(const AuthState(
+    : super(
+        const AuthState(
           isLoggedIn: false,
           driverStatus: DriverStatus.pending,
           driverName: 'Driver',
           rejectionReason: null,
-        ));
+        ),
+      );
 
   void _emit(AuthState s) {
     state = s;
@@ -54,11 +57,19 @@ class AuthStateNotifier extends StateNotifier<AuthState> {
   }
 
   void logout() {
-    _emit(const AuthState(isLoggedIn: false, driverStatus: DriverStatus.pending, driverName: 'Driver'));
+    _emit(
+      const AuthState(
+        isLoggedIn: false,
+        driverStatus: DriverStatus.pending,
+        driverName: 'Driver',
+      ),
+    );
   }
 
   void setStatus(DriverStatus status, {String? rejectionReason}) {
-    _emit(state.copyWith(driverStatus: status, rejectionReason: rejectionReason));
+    _emit(
+      state.copyWith(driverStatus: status, rejectionReason: rejectionReason),
+    );
   }
 
   @override
@@ -68,7 +79,9 @@ class AuthStateNotifier extends StateNotifier<AuthState> {
   }
 }
 
-final authStateProvider = StateNotifierProvider<AuthStateNotifier, AuthState>((ref) {
+final authStateProvider = StateNotifierProvider<AuthStateNotifier, AuthState>((
+  ref,
+) {
   return AuthStateNotifier();
 });
 

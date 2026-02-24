@@ -19,11 +19,20 @@ class AppScaffold extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(title), actions: actions),
-      body: Column(
-        children: [
-          if (showOfflineBanner) OfflineBanner(),
-          Expanded(child: body),
-        ],
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Color(0xFFF7FAFF), Color(0xFFF0F4FB)],
+          ),
+        ),
+        child: Column(
+          children: [
+            if (showOfflineBanner) const OfflineBanner(),
+            Expanded(child: body),
+          ],
+        ),
       ),
     );
   }

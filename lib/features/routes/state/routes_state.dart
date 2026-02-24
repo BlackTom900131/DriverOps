@@ -30,7 +30,29 @@ class RoutesNotifier extends StateNotifier<RoutesState> {
           ),
         ]));
 
-  DriverRoute? byId(String id) => state.routes.where((r) => r.id == id).cast<DriverRoute?>().firstOrNull;
+  DriverRoute? byId(String id) =>
+      state.routes.where((r) => r.id == id).firstOrNull;
+
+  bool canOpenStop(String routeId, String stopId) {
+    final route = byId(routeId);
+    if (route == null) return false;
+    final index = route.stops.indexWhere((s) => s.id == stopId);
+    if (index == -1) return false;
+    return route.stops.take(index).every((s) => s.status == StopStatus.done);
+  }
+
+  String? firstBlockedStopReason(String routeId, String stopId) {
+    final route = byId(routeId);
+    if (route == null) return 'Route not found.';
+    final index = route.stops.indexWhere((s) => s.id == stopId);
+    if (index == -1) return 'Stop not found.';
+    for (var i = 0; i < index; i++) {
+      if (route.stops[i].status != StopStatus.done) {
+        return 'Complete stop ${route.stops[i].id} first to preserve ordered execution.';
+      }
+    }
+    return null;
+  }
 }
 
 final routesProvider = StateNotifierProvider<RoutesNotifier, RoutesState>((ref) {

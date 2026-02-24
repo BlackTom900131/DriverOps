@@ -10,7 +10,8 @@ class DriverOpsApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(appRouterProvider);
     return MaterialApp.router(
-      title: 'Driver Ops',
+      title: 'Driver Operations System',
+      debugShowCheckedModeBanner: false,
       theme: buildAppTheme(),
       routerConfig: router,
     );

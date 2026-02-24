@@ -27,7 +27,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Driver Ops — Login')),
+      appBar: AppBar(title: const Text('Driver Access')),
       body: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 520),
@@ -36,43 +36,66 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               padding: const EdgeInsets.all(16),
               child: Form(
                 key: _formKey,
-                child: Column(mainAxisSize: MainAxisSize.min, children: [
-                  TextFormField(
-                    controller: _name,
-                    decoration: const InputDecoration(labelText: 'Driver name (mock)'),
-                    validator: (v) => (v == null || v.trim().isEmpty) ? 'Required' : null,
-                  ),
-                  const SizedBox(height: 12),
-                  TextFormField(
-                    controller: _email,
-                    decoration: const InputDecoration(labelText: 'Email'),
-                    validator: (v) => (v == null || !v.contains('@')) ? 'Enter a valid email' : null,
-                  ),
-                  const SizedBox(height: 12),
-                  TextFormField(
-                    controller: _pass,
-                    decoration: const InputDecoration(labelText: 'Password'),
-                    obscureText: true,
-                    validator: (v) => (v == null || v.length < 3) ? 'Too short' : null,
-                  ),
-                  const SizedBox(height: 16),
-                  SizedBox(
-                    width: double.infinity,
-                    child: FilledButton(
-                      onPressed: () {
-                        if (!_formKey.currentState!.validate()) return;
-                        ref.read(authStateProvider.notifier).mockLogin(_name.text.trim());
-                        context.go('/home');
-                      },
-                      child: const Text('Login (mock)'),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        'Secure login',
+                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  TextButton(
-                    onPressed: () => context.go('/registration'),
-                    child: const Text('New driver? Register'),
-                  ),
-                ]),
+                    const SizedBox(height: 8),
+                    TextFormField(
+                      controller: _name,
+                      decoration: const InputDecoration(labelText: 'Driver name'),
+                      validator: (v) => (v == null || v.trim().isEmpty) ? 'Required' : null,
+                    ),
+                    const SizedBox(height: 12),
+                    TextFormField(
+                      controller: _email,
+                      decoration: const InputDecoration(labelText: 'Email'),
+                      validator: (v) => (v == null || !v.contains('@')) ? 'Invalid email' : null,
+                    ),
+                    const SizedBox(height: 12),
+                    TextFormField(
+                      controller: _pass,
+                      decoration: const InputDecoration(labelText: 'Password'),
+                      obscureText: true,
+                      validator: (v) => (v == null || v.length < 3) ? 'Too short' : null,
+                    ),
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      width: double.infinity,
+                      child: FilledButton(
+                        onPressed: () {
+                          if (!_formKey.currentState!.validate()) return;
+                          ref.read(authStateProvider.notifier).mockLogin(_name.text.trim());
+                          context.go('/home');
+                        },
+                        child: const Text('Login'),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton.icon(
+                        onPressed: () {
+                          ref.read(authStateProvider.notifier).mockLogin(_name.text.trim());
+                          context.go('/home');
+                        },
+                        icon: const Icon(Icons.fingerprint),
+                        label: const Text('Login with biometrics (mock)'),
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    TextButton(
+                      onPressed: () => context.go('/registration'),
+                      child: const Text('New driver? Start registration'),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

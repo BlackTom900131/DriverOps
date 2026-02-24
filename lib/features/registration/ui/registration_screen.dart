@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../auth/state/auth_state.dart';
+import '../../../shared/models/driver.dart';
 import '../../../shared/widgets/app_scaffold.dart';
 
 class RegistrationStepperScreen extends ConsumerStatefulWidget {

@@ -1,252 +1,145 @@
 import 'package:flutter/material.dart';
-import 'document_upload_screen.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import '../../auth/state/auth_state.dart';
+import '../../../shared/models/driver.dart';
+import '../../../shared/widgets/app_scaffold.dart';
+import '../../../shared/widgets/status_badge.dart';
 
-/// Multi-step registration screen that guides the user through
-/// personal info, vehicle info, and document upload.
-class RegistrationStepperScreen extends StatefulWidget {
+class RegistrationStepperScreen extends ConsumerStatefulWidget {
   const RegistrationStepperScreen({super.key});
 
   @override
-  State<RegistrationStepperScreen> createState() =>
+  ConsumerState<RegistrationStepperScreen> createState() =>
       _RegistrationStepperScreenState();
 }
 
-class _RegistrationStepperScreenState extends State<RegistrationStepperScreen> {
-  int _currentStep = 0;
+class _RegistrationStepperScreenState
+    extends ConsumerState<RegistrationStepperScreen> {
+  int step = 0;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Driver Registration'),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-      ),
-      body: Stepper(
-        currentStep: _currentStep,
-        onStepContinue: () {
-          if (_currentStep < 2) {
-            setState(() => _currentStep++);
-          }
-        },
-        onStepCancel: () {
-          if (_currentStep > 0) {
-            setState(() => _currentStep--);
-          }
-        },
-        steps: [
-          Step(
-            title: const Text('Personal Information'),
-            content: _PersonalInfoStep(
-              onNext: () => setState(() => _currentStep++),
-            ),
-            isActive: _currentStep >= 0,
-            state: _currentStep > 0 ? StepState.complete : StepState.indexed,
-          ),
-          Step(
-            title: const Text('Vehicle Information'),
-            content: _VehicleInfoStep(
-              onNext: () => setState(() => _currentStep++),
-            ),
-            isActive: _currentStep >= 1,
-            state: _currentStep > 1 ? StepState.complete : StepState.indexed,
-          ),
-          Step(
-            title: const Text('Documents & Photo'),
-            content: _DocumentStep(
-              onNext: () {
-                if (mounted) Navigator.of(context).pop(true);
-              },
-            ),
-            isActive: _currentStep >= 2,
-            state: StepState.indexed,
-          ),
-        ],
-      ),
-    );
-  }
-}
+    final auth = ref.watch(authStateProvider);
+    final notifier = ref.read(authStateProvider.notifier);
 
-class _PersonalInfoStep extends StatefulWidget {
-  final VoidCallback onNext;
-
-  const _PersonalInfoStep({required this.onNext});
-
-  @override
-  State<_PersonalInfoStep> createState() => _PersonalInfoStepState();
-}
-
-class _PersonalInfoStepState extends State<_PersonalInfoStep> {
-  final _nameController = TextEditingController();
-  final _idController = TextEditingController();
-  final _phoneController = TextEditingController();
-  final _emailController = TextEditingController();
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _idController.dispose();
-    _phoneController.dispose();
-    _emailController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+    return AppScaffold(
+      title: 'Registration & Compliance',
+      body: ListView(
+        padding: const EdgeInsets.only(bottom: 20),
         children: [
-          TextFormField(
-            controller: _nameController,
-            decoration: const InputDecoration(
-              labelText: 'Full Name',
-              border: OutlineInputBorder(),
-            ),
-          ),
-          const SizedBox(height: 12),
-          TextFormField(
-            controller: _idController,
-            decoration: const InputDecoration(
-              labelText: 'Government ID',
-              border: OutlineInputBorder(),
-            ),
-          ),
-          const SizedBox(height: 12),
-          TextFormField(
-            controller: _phoneController,
-            decoration: const InputDecoration(
-              labelText: 'Phone',
-              border: OutlineInputBorder(),
-            ),
-            keyboardType: TextInputType.phone,
-          ),
-          const SizedBox(height: 12),
-          TextFormField(
-            controller: _emailController,
-            decoration: const InputDecoration(
-              labelText: 'Email',
-              border: OutlineInputBorder(),
-            ),
-            keyboardType: TextInputType.emailAddress,
-          ),
-          const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: widget.onNext,
-            child: const Text('Continue'),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _VehicleInfoStep extends StatefulWidget {
-  final VoidCallback onNext;
-
-  const _VehicleInfoStep({required this.onNext});
-
-  @override
-  State<_VehicleInfoStep> createState() => _VehicleInfoStepState();
-}
-
-class _VehicleInfoStepState extends State<_VehicleInfoStep> {
-  final _brandController = TextEditingController();
-  final _modelController = TextEditingController();
-  final _plateController = TextEditingController();
-  String _vehicleType = 'Car';
-
-  @override
-  void dispose() {
-    _brandController.dispose();
-    _modelController.dispose();
-    _plateController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          DropdownButtonFormField<String>(
-            value: _vehicleType,
-            decoration: const InputDecoration(
-              labelText: 'Vehicle Type',
-              border: OutlineInputBorder(),
-            ),
-            items: ['Car', 'Truck', 'Van', 'Motorcycle', 'Bus', 'SUV']
-                .map((v) => DropdownMenuItem(value: v, child: Text(v)))
-                .toList(),
-            onChanged: (v) => setState(() => _vehicleType = v ?? 'Car'),
-          ),
-          const SizedBox(height: 12),
-          TextFormField(
-            controller: _brandController,
-            decoration: const InputDecoration(
-              labelText: 'Brand',
-              border: OutlineInputBorder(),
-            ),
-          ),
-          const SizedBox(height: 12),
-          TextFormField(
-            controller: _modelController,
-            decoration: const InputDecoration(
-              labelText: 'Model',
-              border: OutlineInputBorder(),
-            ),
-          ),
-          const SizedBox(height: 12),
-          TextFormField(
-            controller: _plateController,
-            decoration: const InputDecoration(
-              labelText: 'License Plate',
-              border: OutlineInputBorder(),
-            ),
-          ),
-          const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: widget.onNext,
-            child: const Text('Continue'),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _DocumentStep extends StatelessWidget {
-  final VoidCallback onNext;
-
-  const _DocumentStep({required this.onNext});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        const Text(
-          'Upload your documents and photo in the next screen.',
-          style: TextStyle(fontSize: 14),
-        ),
-        const SizedBox(height: 16),
-        OutlinedButton.icon(
-          onPressed: () {
-            Navigator.of(context).push(
-              MaterialPageRoute<void>(
-                builder: (context) => const DocumentUploadScreen(),
+          const SizedBox(height: 8),
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Verification status',
+                    style: TextStyle(fontWeight: FontWeight.w700),
+                  ),
+                  const SizedBox(height: 8),
+                  StatusBadge(status: auth.driverStatus),
+                  if (auth.driverStatus == DriverStatus.rejected &&
+                      (auth.rejectionReason?.isNotEmpty ?? false))
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8),
+                      child: Text(
+                        'Rejection reason: ${auth.rejectionReason}',
+                        style: const TextStyle(
+                          color: Color(0xFFC62828),
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  const SizedBox(height: 12),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      OutlinedButton(
+                        onPressed: () => notifier.setStatus(DriverStatus.pending),
+                        child: const Text('Pending'),
+                      ),
+                      OutlinedButton(
+                        onPressed: () => notifier.setStatus(
+                          DriverStatus.underVerification,
+                        ),
+                        child: const Text('Under Verification'),
+                      ),
+                      OutlinedButton(
+                        onPressed: () => notifier.setStatus(DriverStatus.approved),
+                        child: const Text('Approved'),
+                      ),
+                      OutlinedButton(
+                        onPressed: () => notifier.setStatus(
+                          DriverStatus.rejected,
+                          rejectionReason: 'Document mismatch or expired file (mock)',
+                        ),
+                        child: const Text('Rejected'),
+                      ),
+                    ],
+                  ),
+                ],
               ),
-            );
-          },
-          icon: const Icon(Icons.upload_file),
-          label: const Text('Open Document Upload'),
-        ),
-        const SizedBox(height: 16),
-        ElevatedButton(
-          onPressed: onNext,
-          child: const Text('Finish Registration'),
-        ),
-      ],
+            ),
+          ),
+          Card(
+            child: Stepper(
+              currentStep: step,
+              onStepContinue: () => setState(() => step = (step + 1).clamp(0, 3)),
+              onStepCancel: () => setState(() => step = (step - 1).clamp(0, 3)),
+              onStepTapped: (i) => setState(() => step = i),
+              controlsBuilder: (context, details) {
+                return Wrap(
+                  spacing: 8,
+                  children: [
+                    FilledButton(
+                      onPressed: details.onStepContinue,
+                      child: Text(step == 3 ? 'Finish' : 'Continue'),
+                    ),
+                    OutlinedButton(
+                      onPressed: details.onStepCancel,
+                      child: const Text('Back'),
+                    ),
+                  ],
+                );
+              },
+              steps: const [
+                Step(
+                  title: Text('Personal Information'),
+                  content: Text('Identity, contact, and approved-driver details.'),
+                ),
+                Step(
+                  title: Text('Vehicle Information'),
+                  content: Text(
+                    'Vehicle type, plate, and operational compliance attributes.',
+                  ),
+                ),
+                Step(
+                  title: Text('Selfie Verification'),
+                  content: Text(
+                    'Real-time selfie capture and face match validation flow.',
+                  ),
+                ),
+                Step(
+                  title: Text('Document Checklist'),
+                  content: Text('Upload required documents and resolve rejections.'),
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: FilledButton.icon(
+              onPressed: () => context.go('/registration/documents'),
+              icon: const Icon(Icons.upload_file),
+              label: const Text('Open document upload checklist'),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

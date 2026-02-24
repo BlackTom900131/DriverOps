@@ -1,5 +1,5 @@
 import 'package:shared_preferences/shared_preferences.dart';
-import '../models/driver.dart';
+import '../shared/models/driver.dart';
 
 class DriverService {
   static const _key = 'drivers';

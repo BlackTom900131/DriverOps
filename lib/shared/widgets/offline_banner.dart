@@ -1,39 +1,45 @@
-// import 'package:flutter/material.dart';
-// import '../models/driver.dart';
-
-// class StatusBadge extends StatelessWidget {
-//   final DriverStatus status;
-//   const StatusBadge({super.key, required this.status});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     final (label, color) = switch (status) {
-//       DriverStatus.pending => ('Pending', Colors.orange),
-//       DriverStatus.underVerification => ('Under verification', Colors.blue),
-//       DriverStatus.approved => ('Approved', Colors.green),
-//       DriverStatus.rejected => ('Rejected', Colors.red),
-//       DriverStatus.suspended => ('Suspended', Colors.redAccent),
-//     };
-
-//     return Container(
-//       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-//       decoration: BoxDecoration(
-//         color: color.withOpacity(0.12),
-//         borderRadius: BorderRadius.circular(999),
-//         border: Border.all(color: color.withOpacity(0.3)),
-//       ),
-//       child: Text(label, style: TextStyle(color: color, fontWeight: FontWeight.w600)),
-//     );
-//   }
-// }
-
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../features/offline_queue/state/offline_queue_state.dart';
 
-class OfflineBanner extends StatelessWidget {
+class OfflineBanner extends ConsumerWidget {
   const OfflineBanner({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return const SizedBox.shrink(); // placeholder banner
+  Widget build(BuildContext context, WidgetRef ref) {
+    final queue = ref.watch(offlineQueueProvider);
+    if (!queue.isOffline && queue.pendingEvents == 0) {
+      return const SizedBox.shrink();
+    }
+
+    final text = queue.isOffline
+        ? 'Offline mode active. ${queue.pendingEvents} event(s) queued for sync.'
+        : '${queue.pendingEvents} event(s) waiting to sync.';
+
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.fromLTRB(16, 10, 16, 6),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      decoration: BoxDecoration(
+        color: const Color(0xFFFFF3E3),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFFFD3A6)),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.cloud_off_outlined, color: Color(0xFF9A4A00)),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              text,
+              style: const TextStyle(
+                color: Color(0xFF723600),
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
