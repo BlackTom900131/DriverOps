@@ -6,6 +6,8 @@ import 'package:go_router/go_router.dart';
 import '../features/auth/state/auth_state.dart';
 import '../shared/models/driver.dart';
 import '../features/auth/ui/login_screen.dart';
+import '../features/auth/ui/login_details_screen.dart';
+import '../features/auth/ui/splash_screen.dart';
 import '../features/registration/ui/registration_stepper_screen.dart';
 import '../features/workday/ui/home_screen.dart';
 import '../features/workday/ui/start_workday_screen.dart';
@@ -19,17 +21,21 @@ import '../features/delivery/ui/failed_delivery_screen.dart';
 import '../features/offline_queue/ui/offline_queue_screen.dart';
 import '../features/profile/ui/profile_screen.dart';
 import '../features/registration/ui/document_upload_screen.dart';
+import '../features/status/ui/status_screen.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   final auth = ref.watch(authStateProvider);
 
   return GoRouter(
-    initialLocation: '/login',
+    initialLocation: '/splash',
     refreshListenable: GoRouterRefreshStream(
       ref.watch(authStateProvider.notifier).stream,
     ),
     redirect: (context, state) {
-      final loggingIn = state.matchedLocation == '/login';
+      final onSplash = state.matchedLocation == '/splash';
+      final loggingIn = state.matchedLocation.startsWith('/login');
+
+      if (onSplash) return null;
 
       // Not logged in -> force login
       if (!auth.isLoggedIn) {
@@ -37,21 +43,32 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       }
 
       // Logged in -> prevent going back to login
-      if (loggingIn) return '/home';
+      if (loggingIn) return '/home/status';
 
       // Driver status gate: only Approved can operate
       if (auth.driverStatus != DriverStatus.approved) {
-        // Allow registration screen even if not approved.
+        final onStatus = state.matchedLocation == '/home/status';
+        // Allow registration and status screens even if not approved.
         final onRegistration = state.matchedLocation.startsWith(
           '/registration',
         );
-        if (!onRegistration) return '/registration';
+        if (!onRegistration && !onStatus) return '/home/status';
       }
 
       return null;
     },
     routes: [
-      GoRoute(path: '/login', builder: (_, _) => const LoginScreen()),
+      GoRoute(path: '/splash', builder: (_, _) => const SplashScreen()),
+      GoRoute(
+        path: '/login',
+        builder: (_, _) => const LoginScreen(),
+        routes: [
+          GoRoute(
+            path: 'details',
+            builder: (_, _) => const LoginDetailsScreen(),
+          ),
+        ],
+      ),
       GoRoute(
         path: '/registration',
         builder: (_, _) => const RegistrationStepperScreen(),
@@ -66,6 +83,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/home',
         builder: (_, _) => const HomeScreen(),
         routes: [
+          GoRoute(
+            path: 'status',
+            builder: (_, _) => const StatusScreen(),
+          ),
           GoRoute(
             path: 'start-workday',
             builder: (_, _) => const StartWorkdayScreen(),

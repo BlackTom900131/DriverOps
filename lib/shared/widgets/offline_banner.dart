@@ -8,13 +8,9 @@ class OfflineBanner extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final queue = ref.watch(offlineQueueProvider);
-    if (!queue.isOffline && queue.pendingEvents == 0) {
+    if (!queue.isOffline) {
       return const SizedBox.shrink();
     }
-
-    final text = queue.isOffline
-        ? 'Offline mode active. ${queue.pendingEvents} event(s) queued for sync.'
-        : '${queue.pendingEvents} event(s) waiting to sync.';
 
     return Container(
       width: double.infinity,
@@ -31,7 +27,7 @@ class OfflineBanner extends ConsumerWidget {
           const SizedBox(width: 10),
           Expanded(
             child: Text(
-              text,
+              'You are offline.',
               style: const TextStyle(
                 color: Color(0xFF723600),
                 fontWeight: FontWeight.w600,
