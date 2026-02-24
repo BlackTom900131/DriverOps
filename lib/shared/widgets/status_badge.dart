@@ -8,6 +8,7 @@ class StatusBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final (label, color) = switch (status) {
+      DriverStatus.none => ('No status', Colors.grey),
       DriverStatus.pending => ('Pending', Colors.orange),
       DriverStatus.underVerification => ('Under verification', Colors.blue),
       DriverStatus.approved => ('Approved', Colors.green),

@@ -11,9 +11,8 @@ class StatusScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final auth = ref.watch(authStateProvider);
-    var status = auth.driverStatus;
-    status =
-        DriverStatus.underVerification; // For testing, remove in production
+    final status = auth.driverStatus;
+    // status = DriverStatus.none; // For testing, remove in production
     final color = _colorFor(status);
 
     return AppScaffold(
@@ -49,6 +48,7 @@ class StatusScreen extends ConsumerWidget {
 
   String _labelFor(DriverStatus status) {
     return switch (status) {
+      DriverStatus.none => 'No action detected.',
       DriverStatus.pending => 'Your request is currently pending review.',
       DriverStatus.underVerification => 'Your account is under verification.',
       DriverStatus.approved => 'You have been approved.',
@@ -59,9 +59,10 @@ class StatusScreen extends ConsumerWidget {
 
   IconData _iconFor(DriverStatus status) {
     return switch (status) {
+      DriverStatus.none => Icons.info_outline,
       DriverStatus.pending => Icons.hourglass_top_rounded,
       DriverStatus.underVerification => Icons.fact_check_outlined,
-      DriverStatus.approved => Icons.verified_rounded,
+      DriverStatus.approved => Icons.check_circle_outlined,
       DriverStatus.rejected => Icons.cancel_outlined,
       DriverStatus.suspended => Icons.pause_circle_outline_rounded,
     };
@@ -69,6 +70,7 @@ class StatusScreen extends ConsumerWidget {
 
   Color _colorFor(DriverStatus status) {
     return switch (status) {
+      DriverStatus.none => const Color.fromARGB(255, 143, 250, 143),
       DriverStatus.pending => const Color(0xFFFF9F0A),
       DriverStatus.underVerification => const Color(0xFF0A84FF),
       DriverStatus.approved => const Color(0xFF34C759),

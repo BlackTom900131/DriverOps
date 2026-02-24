@@ -1,6 +1,13 @@
 import 'dart:convert';
 
-enum DriverStatus { pending, underVerification, approved, rejected, suspended }
+enum DriverStatus {
+  none,
+  pending,
+  underVerification,
+  approved,
+  rejected,
+  suspended,
+}
 
 class Driver {
   final String id;
@@ -74,6 +81,7 @@ class Driver {
 extension DriverStatusX on DriverStatus {
   String get label {
     return switch (this) {
+      DriverStatus.none => 'No action.',
       DriverStatus.pending => 'Pending',
       DriverStatus.underVerification => 'Under Verification',
       DriverStatus.approved => 'Approved',

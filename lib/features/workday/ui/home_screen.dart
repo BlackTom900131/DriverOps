@@ -210,6 +210,7 @@ class HomeScreen extends ConsumerWidget {
 
   String _statusLabel(DriverStatus status) {
     return switch (status) {
+      DriverStatus.none => 'No status',
       DriverStatus.pending => 'Pending verification',
       DriverStatus.underVerification => 'Under verification',
       DriverStatus.approved => 'Approved driver',
