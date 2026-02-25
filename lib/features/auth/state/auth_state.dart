@@ -72,6 +72,10 @@ class AuthStateNotifier extends StateNotifier<AuthState> {
     );
   }
 
+  void updateDriverName(String name) {
+    _emit(state.copyWith(driverName: name));
+  }
+
   @override
   void dispose() {
     _controller.close();

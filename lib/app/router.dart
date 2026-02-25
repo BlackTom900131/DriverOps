@@ -22,6 +22,7 @@ import '../features/offline_queue/ui/offline_queue_screen.dart';
 import '../features/profile/ui/profile_screen.dart';
 import '../features/registration/ui/document_upload_screen.dart';
 import '../features/status/ui/status_screen.dart';
+import '../features/vehicle/ui/vehicle_screen.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   final auth = ref.watch(authStateProvider);
@@ -48,11 +49,15 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       // Driver status gate: only Approved can operate
       if (auth.driverStatus != DriverStatus.approved) {
         final onStatus = state.matchedLocation == '/home/status';
+        final onProfile = state.matchedLocation.startsWith('/home/profile');
+        final onVehicle = state.matchedLocation.startsWith('/home/vehicle');
         // Allow registration and status screens even if not approved.
         final onRegistration = state.matchedLocation.startsWith(
           '/registration',
         );
-        if (!onRegistration && !onStatus) return '/home/status';
+        if (!onRegistration && !onStatus && !onProfile && !onVehicle) {
+          return '/home/status';
+        }
       }
 
       return null;
@@ -148,6 +153,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             builder: (_, _) => const OfflineQueueScreen(),
           ),
           GoRoute(path: 'profile', builder: (_, _) => const ProfileScreen()),
+          GoRoute(path: 'vehicle', builder: (_, _) => const VehicleScreen()),
         ],
       ),
     ],
