@@ -27,57 +27,102 @@ class _LoginDetailsScreenState extends ConsumerState<LoginDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final keyboardInset = MediaQuery.of(context).viewInsets.bottom;
     return Scaffold(
-      appBar: AppBar(title: const Text('Login')),
-      body: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 520),
-          child: Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    TextFormField(
-                      controller: _name,
-                      decoration: const InputDecoration(labelText: 'Name'),
-                      validator: (v) =>
-                          (v == null || v.trim().isEmpty) ? 'Required' : null,
-                    ),
-                    const SizedBox(height: 12),
-                    TextFormField(
-                      controller: _email,
-                      decoration: const InputDecoration(labelText: 'Email'),
-                      validator: (v) => (v == null || !v.contains('@'))
-                          ? 'Invalid email'
-                          : null,
-                    ),
-                    const SizedBox(height: 12),
-                    TextFormField(
-                      controller: _pass,
-                      decoration: const InputDecoration(labelText: 'Password'),
-                      obscureText: true,
-                      validator: (v) =>
-                          (v == null || v.length < 3) ? 'Too short' : null,
-                    ),
-                    const SizedBox(height: 16),
-                    SizedBox(
-                      width: double.infinity,
-                      child: FilledButton(
-                        onPressed: () {
-                          if (!_formKey.currentState!.validate()) return;
-                          ref
-                              .read(authStateProvider.notifier)
-                              .mockLogin(_name.text.trim());
-                          context.go('/home/status');
-                        },
-                        child: const Text('Login'),
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+          padding: EdgeInsets.fromLTRB(22, 18, 22, 22 + keyboardInset),
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 520),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const SizedBox(height: 30),
+                  Center(
+                    child: Container(
+                      width: 150,
+                      height: 150,
+                      padding: const EdgeInsets.all(10),
+                      child: const Image(
+                        image: AssetImage('Assets/LogoBlue.png'),
+                        fit: BoxFit.contain,
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                  const SizedBox(height: 12),
+                  Form(
+                    key: _formKey,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        TextFormField(
+                          controller: _name,
+                          decoration: const InputDecoration(labelText: 'Name'),
+                          validator: (v) => (v == null || v.trim().isEmpty)
+                              ? 'Required'
+                              : null,
+                        ),
+                        const SizedBox(height: 12),
+                        TextFormField(
+                          controller: _email,
+                          decoration: const InputDecoration(labelText: 'Email'),
+                          validator: (v) => (v == null || !v.contains('@'))
+                              ? 'Invalid email'
+                              : null,
+                        ),
+                        const SizedBox(height: 12),
+                        TextFormField(
+                          controller: _pass,
+                          decoration: const InputDecoration(
+                            labelText: 'Password',
+                          ),
+                          obscureText: true,
+                          validator: (v) =>
+                              (v == null || v.length < 3) ? 'Too short' : null,
+                        ),
+                        const SizedBox(height: 16),
+                        SizedBox(
+                          width: double.infinity,
+                          child: FilledButton(
+                            onPressed: () {
+                              if (!_formKey.currentState!.validate()) return;
+                              ref
+                                  .read(authStateProvider.notifier)
+                                  .mockLogin(_name.text.trim());
+                              context.go('/home');
+                            },
+                            child: const Text('Login'),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Wrap(
+                          alignment: WrapAlignment.center,
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          children: [
+                            Text(
+                              "If you didn't sign up yet, ",
+                              style: Theme.of(context).textTheme.bodyMedium
+                                  ?.copyWith(color: const Color(0xFF5F6368)),
+                            ),
+                            InkWell(
+                              onTap: () => context.go('/registration'),
+                              child: const Text(
+                                'Sign up',
+                                style: TextStyle(
+                                  color: Color(0xFF0A84FF),
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
           ),

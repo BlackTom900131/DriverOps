@@ -31,10 +31,13 @@ class AppTheme {
       scaffoldBackgroundColor: _surface,
       fontFamily: 'SF Pro Text',
       appBarTheme: AppBarTheme(
-        elevation: 0,
+        elevation: 1,
+        shadowColor: Colors.black.withValues(alpha: 0.2),
         centerTitle: false,
-        backgroundColor: Colors.white.withValues(alpha: 0.86),
-        foregroundColor: base.colorScheme.onSurface,
+        backgroundColor: const Color(0xFF0B6FE3),
+        foregroundColor: Colors.white,
+        iconTheme: const IconThemeData(color: Colors.white),
+        actionsIconTheme: const IconThemeData(color: Colors.white),
         surfaceTintColor: Colors.transparent,
       ),
       cardTheme: CardThemeData(
@@ -43,7 +46,9 @@ class AppTheme {
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
-          side: BorderSide(color: base.colorScheme.outline.withValues(alpha: 0.55)),
+          side: BorderSide(
+            color: base.colorScheme.outline.withValues(alpha: 0.55),
+          ),
         ),
       ),
       listTileTheme: const ListTileThemeData(
@@ -54,25 +59,64 @@ class AppTheme {
         style: FilledButton.styleFrom(
           backgroundColor: _primary,
           foregroundColor: Colors.white,
-          elevation: 0,
+          elevation: 2,
+          shadowColor: Colors.black.withValues(alpha: 0.22),
           minimumSize: const Size(0, 52),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           textStyle: const TextStyle(fontWeight: FontWeight.w700),
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           minimumSize: const Size(0, 52),
-          foregroundColor: const Color(0xFF1F2937),
-          side: BorderSide(color: base.colorScheme.outline),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          foregroundColor: _primary,
+          side: BorderSide(color: _primary.withValues(alpha: 0.35)),
+          backgroundColor: _primary.withValues(alpha: 0.06),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           textStyle: const TextStyle(fontWeight: FontWeight.w700),
         ),
+      ),
+      iconButtonTheme: IconButtonThemeData(
+        style: IconButton.styleFrom(
+          foregroundColor: _primary,
+          backgroundColor: _primary.withValues(alpha: 0.08),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          side: BorderSide(color: _primary.withValues(alpha: 0.22)),
+        ),
+      ),
+      navigationBarTheme: NavigationBarThemeData(
+        backgroundColor: Colors.white.withValues(alpha: 0.96),
+        indicatorColor: _primary.withValues(alpha: 0.14),
+        surfaceTintColor: Colors.transparent,
+        iconTheme: WidgetStateProperty.resolveWith((states) {
+          final selected = states.contains(WidgetState.selected);
+          return IconThemeData(
+            color: selected ? _primary : const Color(0xFF5B6470),
+            size: 24,
+          );
+        }),
+        labelTextStyle: WidgetStateProperty.resolveWith((states) {
+          final selected = states.contains(WidgetState.selected);
+          return TextStyle(
+            color: selected ? _primary : const Color(0xFF6C7482),
+            fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
+            fontSize: 12,
+          );
+        }),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: Colors.white.withValues(alpha: 0.92),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
           borderSide: BorderSide(color: base.colorScheme.outline),

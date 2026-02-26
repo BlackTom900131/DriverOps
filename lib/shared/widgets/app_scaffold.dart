@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:driversystem/shared/widgets/offline_banner.dart';
 import '../../features/auth/state/auth_state.dart';
-import '../models/driver.dart';
 import 'app_bottom_bar.dart';
 import 'package:go_router/go_router.dart';
 
-class AppScaffold extends ConsumerWidget {
+class AppScaffold extends StatelessWidget {
   final String title;
   final Widget body;
   final List<Widget>? actions;
@@ -21,17 +20,10 @@ class AppScaffold extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final location = GoRouterState.of(context).matchedLocation;
     final selectedIndex = _tabIndex(location);
-    final driverStatus = ref.watch(
-      authStateProvider.select((s) => s.driverStatus),
-    );
-    final statusColor = _statusColor(driverStatus);
-    final appBarActions = <Widget>[
-      ...?actions,
-      const _UserMenuButton(),
-    ];
+    final appBarActions = <Widget>[...?actions, const _UserMenuButton()];
 
     return Scaffold(
       appBar: AppBar(title: Text(title), actions: appBarActions),
@@ -50,35 +42,17 @@ class AppScaffold extends ConsumerWidget {
           ],
         ),
       ),
-      bottomNavigationBar: AppBottomBar(
-        selectedIndex: selectedIndex,
-        statusColor: statusColor,
-      ),
+      bottomNavigationBar: AppBottomBar(selectedIndex: selectedIndex),
     );
   }
 
   int _tabIndex(String location) {
+    if (location.startsWith('/home/routes')) return 1;
+    if (location.startsWith('/home/qr')) return 2;
+    if (location.startsWith('/home/messages')) return 3;
     if (location.startsWith('/home/profile')) return 4;
     if (location.startsWith('/home/security')) return 4;
-    if (location.startsWith('/home/messages')) return 4;
-    if (location.startsWith('/home/documents')) return 3;
-    if (location.startsWith('/home/vehicle')) return 2;
-    if (location.startsWith('/home/status') ||
-        location.startsWith('/registration')) {
-      return 1;
-    }
     return 0;
-  }
-
-  Color _statusColor(DriverStatus status) {
-    return switch (status) {
-      DriverStatus.none => const Color(0xFF8E8E93),
-      DriverStatus.pending => const Color(0xFFFF9F0A),
-      DriverStatus.underVerification => const Color(0xFF0A84FF),
-      DriverStatus.approved => const Color(0xFF34C759),
-      DriverStatus.rejected => const Color(0xFFFF3B30),
-      DriverStatus.suspended => const Color(0xFF8E8E93),
-    };
   }
 }
 
@@ -197,11 +171,7 @@ class _UserMenuItemContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      children: [
-        Icon(icon, size: 18),
-        const SizedBox(width: 10),
-        Text(label),
-      ],
+      children: [Icon(icon, size: 18), const SizedBox(width: 10), Text(label)],
     );
   }
 }

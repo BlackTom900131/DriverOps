@@ -7,7 +7,6 @@ import '../features/auth/state/auth_state.dart';
 import '../shared/models/driver.dart';
 import '../features/auth/ui/login_screen.dart';
 import '../features/auth/ui/login_details_screen.dart';
-import '../features/auth/ui/splash_screen.dart';
 import '../features/registration/ui/registration_stepper_screen.dart';
 import '../features/workday/ui/home_screen.dart';
 import '../features/workday/ui/start_workday_screen.dart';
@@ -26,31 +25,33 @@ import '../features/status/ui/status_screen.dart';
 import '../features/vehicle/ui/vehicle_screen.dart';
 import '../features/security/ui/security_screen.dart';
 import '../features/messages/ui/messages_screen.dart';
+import '../features/qr/ui/qr_screen.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   final auth = ref.watch(authStateProvider);
 
   return GoRouter(
-    initialLocation: '/splash',
+    initialLocation: '/login',
     refreshListenable: GoRouterRefreshStream(
       ref.watch(authStateProvider.notifier).stream,
     ),
     redirect: (context, state) {
-      final onSplash = state.matchedLocation == '/splash';
       final loggingIn = state.matchedLocation.startsWith('/login');
-
-      if (onSplash) return null;
+      final registering = state.matchedLocation.startsWith('/registration');
 
       // Not logged in -> force login
       if (!auth.isLoggedIn) {
-        return loggingIn ? null : '/login';
+        return (loggingIn || registering) ? null : '/login';
       }
 
       // Logged in -> prevent going back to login
-      if (loggingIn) return '/home/status';
+      if (loggingIn) return '/home';
 
       // Driver status gate: only Approved can operate
       if (auth.driverStatus != DriverStatus.approved) {
+        final onHome = state.matchedLocation == '/home';
+        final onRoutes = state.matchedLocation.startsWith('/home/routes');
+        final onQr = state.matchedLocation.startsWith('/home/qr');
         final onStatus = state.matchedLocation == '/home/status';
         final onProfile = state.matchedLocation.startsWith('/home/profile');
         final onVehicle = state.matchedLocation.startsWith('/home/vehicle');
@@ -62,6 +63,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           '/registration',
         );
         if (!onRegistration &&
+            !onHome &&
+            !onRoutes &&
+            !onQr &&
             !onStatus &&
             !onProfile &&
             !onVehicle &&
@@ -75,7 +79,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       return null;
     },
     routes: [
-      GoRoute(path: '/splash', builder: (_, _) => const SplashScreen()),
       GoRoute(
         path: '/login',
         builder: (_, _) => const LoginScreen(),
@@ -166,6 +169,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(path: 'documents', builder: (_, _) => const DocumentScreen()),
           GoRoute(path: 'security', builder: (_, _) => const SecurityScreen()),
           GoRoute(path: 'messages', builder: (_, _) => const MessagesScreen()),
+          GoRoute(path: 'qr', builder: (_, _) => const QrScreen()),
         ],
       ),
     ],
