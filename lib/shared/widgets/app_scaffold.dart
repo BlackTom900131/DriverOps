@@ -82,22 +82,37 @@ class AppScaffold extends ConsumerWidget {
   }
 }
 
-enum _UserMenuAction { profile, vehicle, document, security, messages }
+enum _UserMenuAction {
+  profile,
+  status,
+  vehicle,
+  document,
+  security,
+  messages,
+  logout,
+}
 
-class _UserMenuButton extends StatelessWidget {
+class _UserMenuButton extends ConsumerWidget {
   const _UserMenuButton();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return PopupMenuButton<_UserMenuAction>(
       tooltip: 'User menu',
-      onSelected: (action) => _handleSelection(context, action),
+      onSelected: (action) => _handleSelection(context, ref, action),
       itemBuilder: (context) => const [
         PopupMenuItem<_UserMenuAction>(
           value: _UserMenuAction.profile,
           child: _UserMenuItemContent(
             icon: Icons.person_outline,
             label: 'Profile',
+          ),
+        ),
+        PopupMenuItem<_UserMenuAction>(
+          value: _UserMenuAction.status,
+          child: _UserMenuItemContent(
+            icon: Icons.verified_user_outlined,
+            label: 'Status',
           ),
         ),
         PopupMenuItem<_UserMenuAction>(
@@ -128,6 +143,13 @@ class _UserMenuButton extends StatelessWidget {
             label: 'Messages',
           ),
         ),
+        PopupMenuItem<_UserMenuAction>(
+          value: _UserMenuAction.logout,
+          child: _UserMenuItemContent(
+            icon: Icons.logout_outlined,
+            label: 'Logout',
+          ),
+        ),
       ],
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -139,13 +161,24 @@ class _UserMenuButton extends StatelessWidget {
     );
   }
 
-  void _handleSelection(BuildContext context, _UserMenuAction action) {
+  void _handleSelection(
+    BuildContext context,
+    WidgetRef ref,
+    _UserMenuAction action,
+  ) {
+    if (action == _UserMenuAction.logout) {
+      ref.read(authStateProvider.notifier).logout();
+      return;
+    }
+
     final targetRoute = switch (action) {
+      _UserMenuAction.status => '/home/status',
       _UserMenuAction.profile => '/home/profile',
       _UserMenuAction.vehicle => '/home/vehicle',
       _UserMenuAction.document => '/home/documents',
       _UserMenuAction.security => '/home/security',
       _UserMenuAction.messages => '/home/messages',
+      _UserMenuAction.logout => '/login',
     };
 
     final location = GoRouterState.of(context).matchedLocation;
