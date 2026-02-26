@@ -1,5 +1,7 @@
 enum RouteType { pickup, delivery, mixed }
+
 enum RouteStatus { pending, inProgress, completed }
+
 enum StopStatus { pending, inProgress, done }
 
 class DriverRoute {
@@ -21,11 +23,15 @@ class RouteStop {
   final String customerName;
   final String address;
   final StopStatus status;
+  final double? latitude;
+  final double? longitude;
 
   const RouteStop({
     required this.id,
     required this.customerName,
     required this.address,
     required this.status,
+    this.latitude,
+    this.longitude,
   });
 }

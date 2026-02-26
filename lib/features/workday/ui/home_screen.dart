@@ -84,7 +84,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     'Drive smart. Deliver safely. Earn more with ',
                               ),
                               TextSpan(
-                                text: 'Black-Kall Transport Company.',
+                                text: 'Our Company.',
                                 style: TextStyle(
                                   color: Color(0xFF7EC8FF),
                                   fontWeight: FontWeight.w800,

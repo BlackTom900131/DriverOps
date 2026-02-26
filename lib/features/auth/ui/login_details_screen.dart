@@ -58,12 +58,9 @@ class _LoginDetailsScreenState extends ConsumerState<LoginDetailsScreen> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        TextFormField(
-                          controller: _name,
-                          decoration: const InputDecoration(labelText: 'Name'),
-                          validator: (v) => (v == null || v.trim().isEmpty)
-                              ? 'Required'
-                              : null,
+                        Text(
+                          'Welcome to our company.',
+                          style: Theme.of(context).textTheme.headlineSmall,
                         ),
                         const SizedBox(height: 12),
                         TextFormField(

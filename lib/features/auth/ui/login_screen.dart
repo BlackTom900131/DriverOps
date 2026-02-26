@@ -102,7 +102,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    'Smarter routes. Safer deliveries. Stronger earnings with Black-Kall Transport.',
+                    'Smarter routes. Safer deliveries. Stronger earnings with Our Transport.',
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: const Color(0xFFDCEBFF),

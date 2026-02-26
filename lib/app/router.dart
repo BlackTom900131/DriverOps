@@ -12,6 +12,7 @@ import '../features/workday/ui/home_screen.dart';
 import '../features/workday/ui/start_workday_screen.dart';
 import '../features/routes/ui/routes_list_screen.dart';
 import '../features/routes/ui/route_detail_screen.dart';
+import '../features/routes/ui/route_map_screen.dart';
 import '../features/routes/ui/stop_detail_screen.dart';
 import '../features/pickup/ui/pickup_screen.dart';
 import '../features/delivery/ui/delivery_screen.dart';
@@ -117,6 +118,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 builder: (_, s) =>
                     RouteDetailScreen(routeId: s.pathParameters['routeId']!),
                 routes: [
+                  GoRoute(
+                    path: 'map',
+                    builder: (_, s) =>
+                        RouteMapScreen(routeId: s.pathParameters['routeId']!),
+                  ),
                   GoRoute(
                     path: 'stops/:stopId',
                     builder: (_, s) => StopDetailScreen(
