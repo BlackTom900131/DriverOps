@@ -23,7 +23,9 @@ class AppScaffold extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final location = GoRouterState.of(context).matchedLocation;
     final selectedIndex = _tabIndex(location);
-    final driverStatus = ref.watch(authStateProvider.select((s) => s.driverStatus));
+    final driverStatus = ref.watch(
+      authStateProvider.select((s) => s.driverStatus),
+    );
     final statusColor = _statusColor(driverStatus);
 
     return Scaffold(
@@ -60,7 +62,7 @@ class AppScaffold extends ConsumerWidget {
               case 2:
                 context.go('/home/vehicle');
               case 3:
-                context.go('/home/offline-queue');
+                context.go('/home/documents');
               case 4:
                 context.go('/home/profile');
             }
@@ -82,9 +84,9 @@ class AppScaffold extends ConsumerWidget {
               label: 'Vehicle',
             ),
             const NavigationDestination(
-              icon: Icon(Icons.cloud_sync_outlined),
-              selectedIcon: Icon(Icons.cloud_sync),
-              label: 'Offline',
+              icon: Icon(Icons.description_outlined),
+              selectedIcon: Icon(Icons.description),
+              label: 'Document',
             ),
             const NavigationDestination(
               icon: Icon(Icons.person_outline),
@@ -99,9 +101,10 @@ class AppScaffold extends ConsumerWidget {
 
   int _tabIndex(String location) {
     if (location.startsWith('/home/profile')) return 4;
-    if (location.startsWith('/home/offline-queue')) return 3;
+    if (location.startsWith('/home/documents')) return 3;
     if (location.startsWith('/home/vehicle')) return 2;
-    if (location.startsWith('/home/status') || location.startsWith('/registration')) {
+    if (location.startsWith('/home/status') ||
+        location.startsWith('/registration')) {
       return 1;
     }
     return 0;

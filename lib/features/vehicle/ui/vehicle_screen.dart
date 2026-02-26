@@ -393,7 +393,7 @@ class _VehicleScreenState extends State<VehicleScreen> {
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
-      title: 'Vehicle',
+      title: 'Vehicle information',
       body: ListView(
         padding: const EdgeInsets.only(top: 8, bottom: 20),
         children: [

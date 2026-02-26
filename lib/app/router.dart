@@ -19,6 +19,7 @@ import '../features/delivery/ui/delivery_screen.dart';
 import '../features/delivery/ui/pod_screen.dart';
 import '../features/delivery/ui/failed_delivery_screen.dart';
 import '../features/offline_queue/ui/offline_queue_screen.dart';
+import '../features/document/ui/document_screen.dart';
 import '../features/profile/ui/profile_screen.dart';
 import '../features/registration/ui/document_upload_screen.dart';
 import '../features/status/ui/status_screen.dart';
@@ -51,11 +52,16 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         final onStatus = state.matchedLocation == '/home/status';
         final onProfile = state.matchedLocation.startsWith('/home/profile');
         final onVehicle = state.matchedLocation.startsWith('/home/vehicle');
+        final onDocuments = state.matchedLocation.startsWith('/home/documents');
         // Allow registration and status screens even if not approved.
         final onRegistration = state.matchedLocation.startsWith(
           '/registration',
         );
-        if (!onRegistration && !onStatus && !onProfile && !onVehicle) {
+        if (!onRegistration &&
+            !onStatus &&
+            !onProfile &&
+            !onVehicle &&
+            !onDocuments) {
           return '/home/status';
         }
       }
@@ -88,10 +94,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/home',
         builder: (_, _) => const HomeScreen(),
         routes: [
-          GoRoute(
-            path: 'status',
-            builder: (_, _) => const StatusScreen(),
-          ),
+          GoRoute(path: 'status', builder: (_, _) => const StatusScreen()),
           GoRoute(
             path: 'start-workday',
             builder: (_, _) => const StartWorkdayScreen(),
@@ -154,6 +157,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           ),
           GoRoute(path: 'profile', builder: (_, _) => const ProfileScreen()),
           GoRoute(path: 'vehicle', builder: (_, _) => const VehicleScreen()),
+          GoRoute(path: 'documents', builder: (_, _) => const DocumentScreen()),
         ],
       ),
     ],

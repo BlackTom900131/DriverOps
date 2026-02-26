@@ -78,7 +78,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
-      title: 'Profile',
+      title: 'Personal information',
       body: ListView(
         padding: const EdgeInsets.only(bottom: 20),
         children: [
