@@ -1,10 +1,9 @@
-import 'dart:convert';
 import 'dart:io';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../shared/widgets/app_scaffold.dart';
 
@@ -16,23 +15,37 @@ class DocumentScreen extends StatefulWidget {
 }
 
 class _DocumentScreenState extends State<DocumentScreen> {
-  static const String _docsPrefKey = 'documents_upload_state_v1';
+  static const String _secureUploadEndpoint =
+      'https://example.com/api/documents/upload';
+  static const List<String> _allowedImageExtensions = [
+    'jpg',
+    'jpeg',
+    'png',
+    'webp',
+  ];
+  static const List<String> _allowedExtensions = [
+    'jpg',
+    'jpeg',
+    'png',
+    'webp',
+    'pdf',
+  ];
 
   static const List<_DocumentDefinition> _personalDocs = [
     _DocumentDefinition(
       id: 'government_id',
       title: 'Government ID',
-      section: 'personal',
+      maxSizeMb: 8,
     ),
     _DocumentDefinition(
       id: 'drivers_license',
       title: 'Valid driver\'s license',
-      section: 'personal',
+      maxSizeMb: 8,
     ),
     _DocumentDefinition(
       id: 'additional_cert',
       title: 'Additional certifications required by the company',
-      section: 'personal',
+      maxSizeMb: 8,
     ),
   ];
 
@@ -40,22 +53,22 @@ class _DocumentScreenState extends State<DocumentScreen> {
     _DocumentDefinition(
       id: 'vehicle_registration',
       title: 'Vehicle registration certificate',
-      section: 'vehicle',
+      maxSizeMb: 10,
     ),
     _DocumentDefinition(
       id: 'mandatory_insurance',
       title: 'Mandatory insurance (valid)',
-      section: 'vehicle',
+      maxSizeMb: 10,
     ),
     _DocumentDefinition(
       id: 'technical_inspection',
       title: 'Technical inspection certificate (valid)',
-      section: 'vehicle',
+      maxSizeMb: 10,
     ),
     _DocumentDefinition(
       id: 'additional_insurance',
       title: 'Additional insurance if required',
-      section: 'vehicle',
+      maxSizeMb: 10,
     ),
   ];
 
@@ -68,110 +81,204 @@ class _DocumentScreenState extends State<DocumentScreen> {
     for (final doc in [..._personalDocs, ..._vehicleDocs]) {
       _statusById[doc.id] = const _DocumentUploadStatus();
     }
-    _loadSavedUploadStatus();
   }
 
-  Future<void> _loadSavedUploadStatus() async {
-    final prefs = await SharedPreferences.getInstance();
-    final raw = prefs.getString(_docsPrefKey);
-    if (raw == null || raw.trim().isEmpty) return;
-
-    try {
-      final decoded = jsonDecode(raw);
-      if (decoded is! Map<String, dynamic>) return;
-      if (!mounted) return;
-      setState(() {
-        decoded.forEach((id, value) {
-          final current = _statusById[id];
-          if (current == null || value is! Map<String, dynamic>) return;
-          _statusById[id] = _DocumentUploadStatus(
-            localPath: value['localPath'] as String?,
-            uploadedToServer: value['uploadedToServer'] == true,
-          );
-        });
-      });
-    } catch (_) {
-      // Ignore malformed persisted payload.
-    }
-  }
-
-  Future<void> _persistUploadStatus() async {
-    final prefs = await SharedPreferences.getInstance();
-    final payload = <String, Map<String, dynamic>>{};
-    _statusById.forEach((id, status) {
-      payload[id] = {
-        'localPath': status.localPath,
-        'uploadedToServer': status.uploadedToServer,
-      };
-    });
-    await prefs.setString(_docsPrefKey, jsonEncode(payload));
-  }
-
-  Future<void> _pickAndUpload(_DocumentDefinition doc, ImageSource source) async {
-    final current = _statusById[doc.id];
-    if (current == null || current.isUploading) return;
-
+  Future<void> _pickFromCamera(_DocumentDefinition doc) async {
     final picked = await _picker.pickImage(
-      source: source,
-      imageQuality: 85,
-      maxWidth: 2000,
+      source: ImageSource.camera,
+      imageQuality: 100,
+      maxWidth: 3000,
     );
     if (!mounted || picked == null) return;
-
-    setState(() {
-      _statusById[doc.id] = current.copyWith(isUploading: true);
-    });
-
-    try {
-      final localPath = await _saveToInnerStorage(doc, picked.path);
-      await _uploadToServerMock();
-      if (!mounted) return;
-      setState(() {
-        _statusById[doc.id] = _DocumentUploadStatus(
-          localPath: localPath,
-          uploadedToServer: true,
-        );
-      });
-      await _persistUploadStatus();
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${doc.title} uploaded')),
-      );
-    } catch (_) {
-      if (!mounted) return;
-      setState(() {
-        _statusById[doc.id] = current.copyWith(isUploading: false);
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to upload ${doc.title}')),
-      );
-    }
+    await _validateCompressAndUpload(doc, picked.path);
   }
 
-  Future<String> _saveToInnerStorage(_DocumentDefinition doc, String sourcePath) async {
-    final appDir = await getApplicationDocumentsDirectory();
-    final docsDir = Directory('${appDir.path}${Platform.pathSeparator}documents');
-    if (!await docsDir.exists()) {
-      await docsDir.create(recursive: true);
+  Future<void> _pickFromGallery(_DocumentDefinition doc) async {
+    final picked = await _picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 100,
+      maxWidth: 3000,
+    );
+    if (!mounted || picked == null) return;
+    await _validateCompressAndUpload(doc, picked.path);
+  }
+
+  Future<void> _pickPdf(_DocumentDefinition doc) async {
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: const ['pdf'],
+      withData: false,
+      allowMultiple: false,
+    );
+    final path = result?.files.single.path;
+    if (!mounted || path == null || path.trim().isEmpty) return;
+    await _validateCompressAndUpload(doc, path);
+  }
+
+  Future<void> _showGallerySourcePicker(_DocumentDefinition doc) async {
+    await showModalBottomSheet<void>(
+      context: context,
+      builder: (context) {
+        return SafeArea(
+          child: Wrap(
+            children: [
+              ListTile(
+                leading: const Icon(Icons.photo_library_outlined),
+                title: const Text('Image from Gallery'),
+                onTap: () async {
+                  Navigator.of(context).pop();
+                  await _pickFromGallery(doc);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.picture_as_pdf_outlined),
+                title: const Text('PDF Document'),
+                onTap: () async {
+                  Navigator.of(context).pop();
+                  await _pickPdf(doc);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _validateCompressAndUpload(
+    _DocumentDefinition doc,
+    String sourcePath,
+  ) async {
+    final current = _statusById[doc.id] ?? const _DocumentUploadStatus();
+    if (current.isUploading) return;
+
+    final extension = _fileExtension(sourcePath);
+    if (!_allowedExtensions.contains(extension)) {
+      _showInfo('Only image or PDF files are allowed.');
+      return;
     }
 
     final sourceFile = File(sourcePath);
-    final extension = _fileExtension(sourcePath);
-    final fileName = '${doc.id}_${DateTime.now().millisecondsSinceEpoch}$extension';
-    final targetPath = '${docsDir.path}${Platform.pathSeparator}$fileName';
-    final saved = await sourceFile.copy(targetPath);
-    return saved.path;
+    if (!await sourceFile.exists()) {
+      _showInfo('Selected file is not available.');
+      return;
+    }
+
+    File fileToUpload = sourceFile;
+    bool shouldDeleteUploadFileAfter = false;
+
+    try {
+      if (_allowedImageExtensions.contains(extension)) {
+        final compressed = await _compressImage(sourceFile);
+        if (compressed != null) {
+          fileToUpload = compressed;
+          shouldDeleteUploadFileAfter = true;
+        }
+      }
+
+      final fileBytes = await fileToUpload.length();
+      final maxBytes = doc.maxSizeMb * 1024 * 1024;
+      if (fileBytes > maxBytes) {
+        _showInfo('File is too large. Max ${doc.maxSizeMb} MB allowed.');
+        return;
+      }
+
+      setState(() {
+        _statusById[doc.id] = current.copyWith(
+          isUploading: true,
+          uploadedToServer: false,
+          statusText: 'Uploading securely to cloud...',
+        );
+      });
+
+      final serverReason = await _uploadToSecureCloud(
+        documentId: doc.id,
+        file: fileToUpload,
+        extension: extension,
+      );
+
+      if (!mounted) return;
+      setState(() {
+        _statusById[doc.id] = _DocumentUploadStatus(
+          isUploading: false,
+          uploadedToServer: true,
+          statusText: serverReason,
+        );
+      });
+    } catch (error) {
+      final serverReason = _extractServerReason(error);
+      if (!mounted) return;
+      setState(() {
+        _statusById[doc.id] = current.copyWith(
+          isUploading: false,
+          uploadedToServer: false,
+          statusText: 'Upload failed: $serverReason',
+        );
+      });
+    } finally {
+      if (shouldDeleteUploadFileAfter && await fileToUpload.exists()) {
+        await fileToUpload.delete();
+      }
+    }
+  }
+
+  Future<File?> _compressImage(File sourceFile) async {
+    final targetPath =
+        '${Directory.systemTemp.path}${Platform.pathSeparator}'
+        'doc_${DateTime.now().millisecondsSinceEpoch}.jpg';
+    final compressed = await FlutterImageCompress.compressAndGetFile(
+      sourceFile.path,
+      targetPath,
+      quality: 80,
+      minWidth: 1600,
+      minHeight: 1600,
+      keepExif: true,
+      format: CompressFormat.jpeg,
+    );
+    if (compressed == null) return null;
+    return File(compressed.path);
+  }
+
+  Future<String> _uploadToSecureCloud({
+    required String documentId,
+    required File file,
+    required String extension,
+  }) async {
+    final endpoint = Uri.parse(_secureUploadEndpoint);
+    if (endpoint.scheme.toLowerCase() != 'https') {
+      throw Exception('Upload endpoint must use HTTPS.');
+    }
+
+    // Replace this mock with your real secure API upload implementation.
+    // The key constraint enforced here is HTTPS transport.
+    await Future<void>.delayed(const Duration(seconds: 2));
+    if (!await file.exists()) {
+      throw Exception('Upload source missing on device.');
+    }
+    final _ = documentId + extension;
+    return 'Uploaded securely. Server reason: Document accepted.';
+  }
+
+  String _extractServerReason(Object error) {
+    final text = error.toString().trim();
+    if (text.isEmpty) return 'Unknown server error.';
+    if (text.startsWith('Exception: ')) {
+      return text.substring('Exception: '.length);
+    }
+    return text;
   }
 
   String _fileExtension(String path) {
-    final normalized = path.replaceAll('\\', '/');
+    final normalized = path.replaceAll('\\', '/').toLowerCase();
     final index = normalized.lastIndexOf('.');
-    if (index == -1 || index == normalized.length - 1) return '.jpg';
-    return normalized.substring(index);
+    if (index == -1 || index == normalized.length - 1) return '';
+    return normalized.substring(index + 1);
   }
 
-  Future<void> _uploadToServerMock() async {
-    await Future<void>.delayed(const Duration(seconds: 2));
+  void _showInfo(String message) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
@@ -186,14 +293,16 @@ class _DocumentScreenState extends State<DocumentScreen> {
             icon: Icons.person_outline,
             docs: _personalDocs,
             statusById: _statusById,
-            onPick: _pickAndUpload,
+            onCamera: _pickFromCamera,
+            onGalleryOrPdf: _showGallerySourcePicker,
           ),
           _DocumentSection(
             title: 'Vehicle documents',
             icon: Icons.local_shipping_outlined,
             docs: _vehicleDocs,
             statusById: _statusById,
-            onPick: _pickAndUpload,
+            onCamera: _pickFromCamera,
+            onGalleryOrPdf: _showGallerySourcePicker,
           ),
         ],
       ),
@@ -206,14 +315,16 @@ class _DocumentSection extends StatelessWidget {
   final IconData icon;
   final List<_DocumentDefinition> docs;
   final Map<String, _DocumentUploadStatus> statusById;
-  final Future<void> Function(_DocumentDefinition doc, ImageSource source) onPick;
+  final Future<void> Function(_DocumentDefinition doc) onCamera;
+  final Future<void> Function(_DocumentDefinition doc) onGalleryOrPdf;
 
   const _DocumentSection({
     required this.title,
     required this.icon,
     required this.docs,
     required this.statusById,
-    required this.onPick,
+    required this.onCamera,
+    required this.onGalleryOrPdf,
   });
 
   @override
@@ -231,18 +342,21 @@ class _DocumentSection extends StatelessWidget {
                 Text(title, style: Theme.of(context).textTheme.titleMedium),
               ],
             ),
+            const SizedBox(height: 6),
+            Align(
+              alignment: Alignment.centerRight,
+              child: Text(
+                'File size : max 10 MB',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: const Color.fromARGB(255, 27, 136, 5),
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
             const SizedBox(height: 12),
             ...docs.map((doc) {
-              final status = statusById[doc.id] ?? const _DocumentUploadStatus();
-              final isSaved = status.localPath != null && status.localPath!.isNotEmpty;
-              final uploadText = status.isUploading
-                  ? 'Uploading to server...'
-                  : status.uploadedToServer
-                  ? 'Uploaded to server and inner storage'
-                  : isSaved
-                  ? 'Saved to inner storage'
-                  : 'Not uploaded';
-
+              final status =
+                  statusById[doc.id] ?? const _DocumentUploadStatus();
               return Padding(
                 padding: const EdgeInsets.only(bottom: 10),
                 child: Container(
@@ -261,15 +375,13 @@ class _DocumentSection extends StatelessWidget {
                           Icon(
                             status.uploadedToServer
                                 ? Icons.cloud_done_outlined
-                                : isSaved
-                                ? Icons.save_alt_outlined
                                 : Icons.cloud_upload_outlined,
                             size: 18,
                           ),
                           const SizedBox(width: 6),
                           Expanded(
                             child: Text(
-                              uploadText,
+                              status.statusText,
                               style: Theme.of(context).textTheme.bodySmall,
                             ),
                           ),
@@ -288,9 +400,9 @@ class _DocumentSection extends StatelessWidget {
                             child: OutlinedButton.icon(
                               onPressed: status.isUploading
                                   ? null
-                                  : () => onPick(doc, ImageSource.gallery),
-                              icon: const Icon(Icons.photo_library_outlined),
-                              label: const Text('Gallery'),
+                                  : () => onCamera(doc),
+                              icon: const Icon(Icons.photo_camera_outlined),
+                              label: const Text('Camera'),
                             ),
                           ),
                           const SizedBox(width: 8),
@@ -298,9 +410,9 @@ class _DocumentSection extends StatelessWidget {
                             child: OutlinedButton.icon(
                               onPressed: status.isUploading
                                   ? null
-                                  : () => onPick(doc, ImageSource.camera),
-                              icon: const Icon(Icons.photo_camera_outlined),
-                              label: const Text('Camera'),
+                                  : () => onGalleryOrPdf(doc),
+                              icon: const Icon(Icons.upload_file_outlined),
+                              label: const Text('Gallery/PDF'),
                             ),
                           ),
                         ],
@@ -320,35 +432,35 @@ class _DocumentSection extends StatelessWidget {
 class _DocumentDefinition {
   final String id;
   final String title;
-  final String section;
+  final int maxSizeMb;
 
   const _DocumentDefinition({
     required this.id,
     required this.title,
-    required this.section,
+    required this.maxSizeMb,
   });
 }
 
 class _DocumentUploadStatus {
-  final String? localPath;
   final bool uploadedToServer;
   final bool isUploading;
+  final String statusText;
 
   const _DocumentUploadStatus({
-    this.localPath,
     this.uploadedToServer = false,
     this.isUploading = false,
+    this.statusText = 'Not uploaded',
   });
 
   _DocumentUploadStatus copyWith({
-    String? localPath,
     bool? uploadedToServer,
     bool? isUploading,
+    String? statusText,
   }) {
     return _DocumentUploadStatus(
-      localPath: localPath ?? this.localPath,
       uploadedToServer: uploadedToServer ?? this.uploadedToServer,
       isUploading: isUploading ?? this.isUploading,
+      statusText: statusText ?? this.statusText,
     );
   }
 }

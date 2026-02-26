@@ -24,6 +24,8 @@ import '../features/profile/ui/profile_screen.dart';
 import '../features/registration/ui/document_upload_screen.dart';
 import '../features/status/ui/status_screen.dart';
 import '../features/vehicle/ui/vehicle_screen.dart';
+import '../features/security/ui/security_screen.dart';
+import '../features/messages/ui/messages_screen.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   final auth = ref.watch(authStateProvider);
@@ -53,6 +55,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         final onProfile = state.matchedLocation.startsWith('/home/profile');
         final onVehicle = state.matchedLocation.startsWith('/home/vehicle');
         final onDocuments = state.matchedLocation.startsWith('/home/documents');
+        final onSecurity = state.matchedLocation.startsWith('/home/security');
+        final onMessages = state.matchedLocation.startsWith('/home/messages');
         // Allow registration and status screens even if not approved.
         final onRegistration = state.matchedLocation.startsWith(
           '/registration',
@@ -61,7 +65,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             !onStatus &&
             !onProfile &&
             !onVehicle &&
-            !onDocuments) {
+            !onDocuments &&
+            !onSecurity &&
+            !onMessages) {
           return '/home/status';
         }
       }
@@ -158,6 +164,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(path: 'profile', builder: (_, _) => const ProfileScreen()),
           GoRoute(path: 'vehicle', builder: (_, _) => const VehicleScreen()),
           GoRoute(path: 'documents', builder: (_, _) => const DocumentScreen()),
+          GoRoute(path: 'security', builder: (_, _) => const SecurityScreen()),
+          GoRoute(path: 'messages', builder: (_, _) => const MessagesScreen()),
         ],
       ),
     ],
