@@ -28,7 +28,9 @@ class RoutesNotifier extends StateNotifier<RoutesState> {
                 RouteStop(
                   id: 'S-1',
                   customerName: 'Salesforce Tower',
+                  customerContact: '+1 415-555-0101',
                   address: '415 Mission St, San Francisco, CA 94105',
+                  type: StopType.pickup,
                   status: StopStatus.pending,
                   latitude: 37.7897,
                   longitude: -122.3969,
@@ -36,7 +38,9 @@ class RoutesNotifier extends StateNotifier<RoutesState> {
                 RouteStop(
                   id: 'S-2',
                   customerName: 'Oracle Park',
+                  customerContact: '+1 415-555-0102',
                   address: '24 Willie Mays Plaza, San Francisco, CA 94107',
+                  type: StopType.delivery,
                   status: StopStatus.pending,
                   latitude: 37.7786,
                   longitude: -122.3893,
@@ -44,7 +48,9 @@ class RoutesNotifier extends StateNotifier<RoutesState> {
                 RouteStop(
                   id: 'S-3',
                   customerName: 'Ferry Building',
+                  customerContact: '+1 415-555-0103',
                   address: '1 Ferry Building, San Francisco, CA 94111',
+                  type: StopType.mixed,
                   status: StopStatus.pending,
                   latitude: 37.7955,
                   longitude: -122.3937,
@@ -59,8 +65,10 @@ class RoutesNotifier extends StateNotifier<RoutesState> {
                 RouteStop(
                   id: 'S-10',
                   customerName: 'Pier 39',
+                  customerContact: '+1 415-555-0110',
                   address:
                       'Beach St & The Embarcadero, San Francisco, CA 94133',
+                  type: StopType.delivery,
                   status: StopStatus.inProgress,
                   latitude: 37.8087,
                   longitude: -122.4098,
@@ -68,7 +76,9 @@ class RoutesNotifier extends StateNotifier<RoutesState> {
                 RouteStop(
                   id: 'S-11',
                   customerName: 'Lombard Street',
+                  customerContact: '+1 415-555-0111',
                   address: '1000 Lombard St, San Francisco, CA 94109',
+                  type: StopType.delivery,
                   status: StopStatus.pending,
                   latitude: 37.8021,
                   longitude: -122.4187,
