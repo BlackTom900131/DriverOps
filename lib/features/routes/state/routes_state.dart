@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../shared/models/route_models.dart';
+import '../../../shared/extensions/iterable_extensions.dart';
 
 class RoutesState {
   final List<DriverRoute> routes;
@@ -127,7 +128,3 @@ final routesProvider = StateNotifierProvider<RoutesNotifier, RoutesState>((
 ) {
   return RoutesNotifier();
 });
-
-extension _FirstOrNull<T> on Iterable<T> {
-  T? get firstOrNull => isEmpty ? null : first;
-}

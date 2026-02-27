@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../app/navigation/app_routes.dart';
 
 class AppBottomBar extends StatelessWidget {
   final int selectedIndex;
@@ -13,15 +14,20 @@ class AppBottomBar extends StatelessWidget {
       onDestinationSelected: (index) {
         switch (index) {
           case 0:
-            context.go('/home');
+            context.go(AppRoutes.home);
+            return;
           case 1:
-            context.go('/home/routes');
+            context.go(AppRoutes.homeRoutes);
+            return;
           case 2:
-            context.go('/home/qr');
+            context.go(AppRoutes.homeQr);
+            return;
           case 3:
-            context.go('/home/messages');
+            context.go(AppRoutes.homeMessages);
+            return;
           case 4:
-            context.go('/home/profile');
+            context.go(AppRoutes.homeProfile);
+            return;
         }
       },
       destinations: const [

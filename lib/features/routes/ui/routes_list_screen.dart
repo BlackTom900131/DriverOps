@@ -2,9 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../app/navigation/app_routes.dart';
+import '../../../shared/extensions/iterable_extensions.dart';
 import '../../../shared/models/route_models.dart';
 import '../state/routes_state.dart';
 import '../../../shared/widgets/app_scaffold.dart';
+
+const _bluePrimary = Color(0xFF1565C0);
+const _blueLight = Color(0xFFE3F2FD);
+const _blueBorder = Color(0xFF90CAF9);
 
 class RoutesListScreen extends ConsumerWidget {
   const RoutesListScreen({super.key});
@@ -20,11 +26,19 @@ class RoutesListScreen extends ConsumerWidget {
     };
   }
 
-  String _statusLabel(RouteStatus status) {
+  String _stopTypeLabel(StopType type) {
+    return switch (type) {
+      StopType.pickup => 'Pickup',
+      StopType.delivery => 'Delivery',
+      StopType.mixed => 'Mixed',
+    };
+  }
+
+  String _stopStatusLabel(StopStatus status) {
     return switch (status) {
-      RouteStatus.pending => 'Pending',
-      RouteStatus.inProgress => 'In Progress',
-      RouteStatus.completed => 'Completed',
+      StopStatus.pending => 'Pending',
+      StopStatus.inProgress => 'In Progress',
+      StopStatus.done => 'Done',
     };
   }
 
@@ -86,7 +100,6 @@ class RoutesListScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final colors = theme.colorScheme;
     final state = ref.watch(routesProvider);
     final routes = state.routes;
     final selectedRouteId = state.selectedRouteId;
@@ -100,54 +113,6 @@ class RoutesListScreen extends ConsumerWidget {
         padding: const EdgeInsets.only(bottom: 20),
         children: [
           const SizedBox(height: 10),
-          Card(
-            child: Container(
-              padding: const EdgeInsets.all(18),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                gradient: LinearGradient(
-                  colors: [
-                    colors.primary.withValues(alpha: 0.14),
-                    colors.secondary.withValues(alpha: 0.08),
-                  ],
-                ),
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    width: 44,
-                    height: 44,
-                    decoration: BoxDecoration(
-                      color: colors.primary.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Icon(Icons.alt_route_rounded, color: colors.primary),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Route Assignment',
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w800,
-                          ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          'Select a RouterID to view route details and continue.',
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: colors.onSurface.withValues(alpha: 0.75),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
           Card(
             child: Padding(
               padding: const EdgeInsets.all(16),
@@ -180,48 +145,100 @@ class RoutesListScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: 12),
                   if (selectedRoute != null)
-                    GridView.count(
+                    _RouteSummaryStrip(
+                      routeType: _typeLabel(selectedRoute.type),
+                      totalStops: selectedRoute.stops.length.toString(),
+                      routeStatus: selectedRoute.status,
+                    ),
+                  if (selectedRoute != null) ...[
+                    const SizedBox(height: 12),
+                    Text(
+                      'Stop List',
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    ListView.separated(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 8,
-                      mainAxisSpacing: 8,
-                      childAspectRatio: 2.4,
-                      children: [
-                        _InfoCell(
-                          title: 'Route ID',
-                          value: selectedRoute.id,
-                          icon: Icons.tag_rounded,
-                        ),
-                        _InfoCell(
-                          title: 'Route type',
-                          value: _typeLabel(selectedRoute.type),
-                          icon: Icons.category_outlined,
-                        ),
-                        _InfoCell(
-                          title: 'Total stops',
-                          value: selectedRoute.stops.length.toString(),
-                          icon: Icons.pin_drop_outlined,
-                        ),
-                        _InfoCell(
-                          title: 'Route status',
-                          value: _statusLabel(selectedRoute.status),
-                          icon: Icons.flag_outlined,
-                        ),
-                      ],
+                      itemCount: selectedRoute.stops.length,
+                      separatorBuilder: (_, _) => const SizedBox(height: 8),
+                      itemBuilder: (context, index) {
+                        final stop = selectedRoute.stops[index];
+                        final stopType = _stopTypeLabel(stop.type);
+                        final stopStatus = _stopStatusLabel(stop.status);
+                        return ListTile(
+                          contentPadding: const EdgeInsets.fromLTRB(
+                            12,
+                            10,
+                            12,
+                            10,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                            side: BorderSide(
+                              color: _blueBorder.withValues(alpha: 0.65),
+                            ),
+                          ),
+                          tileColor: Colors.white,
+                          leading: CircleAvatar(
+                            backgroundColor: _bluePrimary.withValues(
+                              alpha: 0.12,
+                            ),
+                            foregroundColor: _bluePrimary,
+                            child: Text(
+                              '${index + 1}',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                          ),
+                          title: Text(
+                            stop.customerName,
+                            style: const TextStyle(fontWeight: FontWeight.w700),
+                          ),
+                          subtitle: Padding(
+                            padding: const EdgeInsets.only(top: 6),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Wrap(
+                                  spacing: 6,
+                                  runSpacing: 6,
+                                  children: [
+                                    _StopChip(label: stopType),
+                                    _StopChip(
+                                      label: stopStatus,
+                                      isStatus: true,
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 6),
+                                Text(
+                                  stop.address,
+                                  style: Theme.of(context).textTheme.bodySmall
+                                      ?.copyWith(
+                                        color: const Color(0xFF3A4B61),
+                                      ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          isThreeLine: true,
+                          trailing: const Icon(
+                            Icons.chevron_right,
+                            color: _bluePrimary,
+                          ),
+                          onTap: () => context.push(
+                            AppRoutes.stopDetails(selectedRoute.id, stop.id),
+                          ),
+                        );
+                      },
                     ),
+                  ],
                   const SizedBox(height: 12),
-                  SizedBox(
-                    width: double.infinity,
-                    child: FilledButton.icon(
-                      onPressed: selectedRouteId == null
-                          ? null
-                          : () => context.go('/home/routes/$selectedRouteId'),
-                      icon: const Icon(Icons.chevron_right),
-                      label: const Text('View Detail'),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
                   SizedBox(
                     width: double.infinity,
                     child: OutlinedButton.icon(
@@ -230,6 +247,10 @@ class RoutesListScreen extends ConsumerWidget {
                           : () => _openGoogleMapsWeb(context, selectedRoute),
                       icon: const Icon(Icons.map_outlined),
                       label: const Text('View on Map'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: _bluePrimary,
+                        side: const BorderSide(color: _bluePrimary),
+                      ),
                     ),
                   ),
                 ],
@@ -242,51 +263,56 @@ class RoutesListScreen extends ConsumerWidget {
   }
 }
 
-class _InfoCell extends StatelessWidget {
-  final String title;
-  final String value;
-  final IconData icon;
+class _RouteSummaryStrip extends StatelessWidget {
+  final String routeType;
+  final String totalStops;
+  final RouteStatus routeStatus;
 
-  const _InfoCell({
-    required this.title,
-    required this.value,
-    required this.icon,
+  const _RouteSummaryStrip({
+    required this.routeType,
+    required this.totalStops,
+    required this.routeStatus,
   });
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
       decoration: BoxDecoration(
-        border: Border.all(color: colors.outline.withValues(alpha: 0.45)),
-        borderRadius: BorderRadius.circular(12),
-        color: Colors.white.withValues(alpha: 0.75),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, size: 14, color: colors.primary),
-              const SizedBox(width: 6),
-              Text(
-                title,
-                style: theme.textTheme.labelMedium?.copyWith(
-                  color: colors.onSurface.withValues(alpha: 0.75),
-                ),
-              ),
-            ],
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [_blueLight, Color(0xFFBBDEFB)],
+        ),
+        border: Border.all(color: _blueBorder),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: _bluePrimary.withValues(alpha: 0.16),
+            blurRadius: 14,
+            offset: const Offset(0, 8),
           ),
-          const SizedBox(height: 6),
-          Text(
-            value,
-            textAlign: TextAlign.center,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.w700,
+        ],
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: _SummaryItem(
+              title: 'Route type',
+              value: routeType,
+            ),
+          ),
+          const _SummaryDivider(),
+          Expanded(
+            child: _SummaryItem(
+              title: 'Total stops',
+              value: totalStops,
+            ),
+          ),
+          const _SummaryDivider(),
+          Expanded(
+            child: _StatusSummaryItem(
+              status: routeStatus,
             ),
           ),
         ],
@@ -295,6 +321,173 @@ class _InfoCell extends StatelessWidget {
   }
 }
 
-extension _FirstOrNull<T> on Iterable<T> {
-  T? get firstOrNull => isEmpty ? null : first;
+class _SummaryDivider extends StatelessWidget {
+  const _SummaryDivider();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 14,
+      alignment: Alignment.center,
+      child: Container(
+        width: 2,
+        height: 46,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(999),
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Colors.white.withValues(alpha: 0.0),
+              _bluePrimary.withValues(alpha: 0.25),
+              _bluePrimary.withValues(alpha: 0.25),
+              Colors.white.withValues(alpha: 0.0),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _StopChip extends StatelessWidget {
+  final String label;
+  final bool isStatus;
+
+  const _StopChip({required this.label, this.isStatus = false});
+
+  @override
+  Widget build(BuildContext context) {
+    final background = isStatus
+        ? _bluePrimary.withValues(alpha: 0.12)
+        : _blueLight.withValues(alpha: 0.75);
+    final foreground = isStatus ? _bluePrimary : const Color(0xFF24456E);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: background,
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: _blueBorder.withValues(alpha: 0.75)),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.w700,
+          color: foreground,
+          letterSpacing: 0.2,
+        ),
+      ),
+    );
+  }
+}
+
+class _SummaryItem extends StatelessWidget {
+  final String title;
+  final String value;
+
+  const _SummaryItem({
+    required this.title,
+    required this.value,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return SizedBox(
+      height: 58,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Text(
+          title.toUpperCase(),
+          textAlign: TextAlign.center,
+          style: theme.textTheme.labelSmall?.copyWith(
+            color: colors.onSurface.withValues(alpha: 0.62),
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.7,
+          ),
+        ),
+        Text(
+          value,
+          textAlign: TextAlign.center,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            fontWeight: FontWeight.w900,
+            color: colors.onSurface,
+            letterSpacing: 0.1,
+          ),
+        ),
+      ],
+      ),
+    );
+  }
+}
+
+class _StatusSummaryItem extends StatelessWidget {
+  final RouteStatus status;
+
+  const _StatusSummaryItem({required this.status});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final (background, foreground, border, label) = switch (status) {
+      RouteStatus.pending => (
+        const Color(0xFFFFF4DE),
+        const Color(0xFF8A4B00),
+        const Color(0xFFFFD08A),
+        'Pending',
+      ),
+      RouteStatus.inProgress => (
+        const Color(0xFFE3F2FD),
+        const Color(0xFF0D47A1),
+        const Color(0xFF90CAF9),
+        'In Progress',
+      ),
+      RouteStatus.completed => (
+        const Color(0xFFE7F7EC),
+        const Color(0xFF1B5E20),
+        const Color(0xFFA5D6A7),
+        'Completed',
+      ),
+    };
+
+    return SizedBox(
+      height: 58,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Text(
+          'ROUTE STATUS',
+          textAlign: TextAlign.center,
+          style: theme.textTheme.labelSmall?.copyWith(
+            color: const Color(0xFF4B5D75),
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.7,
+          ),
+        ),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+          decoration: BoxDecoration(
+            color: background,
+            borderRadius: BorderRadius.circular(999),
+            border: Border.all(color: border),
+          ),
+          child: Text(
+            label,
+            textAlign: TextAlign.center,
+            style: theme.textTheme.labelMedium?.copyWith(
+              fontWeight: FontWeight.w800,
+              color: foreground,
+              letterSpacing: 0.2,
+            ),
+          ),
+        ),
+      ],
+      ),
+    );
+  }
 }

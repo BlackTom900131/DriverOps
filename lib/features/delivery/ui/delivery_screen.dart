@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../../app/navigation/app_routes.dart';
 import '../../../shared/widgets/app_scaffold.dart';
 
 enum DeliveryDecision { delivered, failed }
@@ -84,11 +85,17 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
                           : () {
                               if (decision == DeliveryDecision.delivered) {
                                 context.go(
-                                  '/home/routes/${widget.routeId}/stops/${widget.stopId}/delivery/pod',
+                                  AppRoutes.stopDeliveryPod(
+                                    widget.routeId,
+                                    widget.stopId,
+                                  ),
                                 );
                               } else {
                                 context.go(
-                                  '/home/routes/${widget.routeId}/stops/${widget.stopId}/delivery/failed',
+                                  AppRoutes.stopDeliveryFailed(
+                                    widget.routeId,
+                                    widget.stopId,
+                                  ),
                                 );
                               }
                             },

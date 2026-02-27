@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../app/navigation/app_routes.dart';
 import '../../../shared/models/route_models.dart';
 import '../state/routes_state.dart';
 import '../../../shared/widgets/app_scaffold.dart';
@@ -194,9 +195,8 @@ class StopDetailScreen extends ConsumerWidget {
                       child: FilledButton.icon(
                         onPressed: isBlocked
                             ? null
-                            : () => context.push(
-                                '/home/routes/$routeId/stops/$stopId/pickup',
-                              ),
+                            : () =>
+                                context.push(AppRoutes.stopPickup(routeId, stopId)),
                         icon: const Icon(Icons.qr_code_scanner),
                         label: const Text('Pickup'),
                       ),
@@ -208,7 +208,7 @@ class StopDetailScreen extends ConsumerWidget {
                         onPressed: isBlocked
                             ? null
                             : () => context.push(
-                                '/home/routes/$routeId/stops/$stopId/delivery',
+                                AppRoutes.stopDelivery(routeId, stopId),
                               ),
                         icon: const Icon(Icons.local_shipping_outlined),
                         label: const Text('Delivery'),

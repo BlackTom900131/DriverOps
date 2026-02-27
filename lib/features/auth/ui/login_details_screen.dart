@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../app/navigation/app_routes.dart';
 
 import '../state/auth_state.dart';
 
@@ -89,7 +90,7 @@ class _LoginDetailsScreenState extends ConsumerState<LoginDetailsScreen> {
                               ref
                                   .read(authStateProvider.notifier)
                                   .mockLogin(_name.text.trim());
-                              context.go('/home');
+                              context.go(AppRoutes.home);
                             },
                             child: const Text('Login'),
                           ),
@@ -105,7 +106,7 @@ class _LoginDetailsScreenState extends ConsumerState<LoginDetailsScreen> {
                                   ?.copyWith(color: const Color(0xFF5F6368)),
                             ),
                             InkWell(
-                              onTap: () => context.go('/registration'),
+                              onTap: () => context.go(AppRoutes.registration),
                               child: const Text(
                                 'Sign up',
                                 style: TextStyle(

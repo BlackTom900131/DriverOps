@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../../app/navigation/app_routes.dart';
 
 class RegistrationStepperScreen extends StatefulWidget {
   const RegistrationStepperScreen({super.key});
@@ -108,7 +109,7 @@ class _RegistrationStepperScreenState extends State<RegistrationStepperScreen> {
                           child: FilledButton(
                             onPressed: () {
                               if (!_formKey.currentState!.validate()) return;
-                              context.go('/login/details');
+                              context.go(AppRoutes.loginDetails);
                             },
                             child: const Text('Continue'),
                           ),

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:driversystem/shared/widgets/offline_banner.dart';
+import '../../app/navigation/app_routes.dart';
 import '../../features/auth/state/auth_state.dart';
+import 'offline_banner.dart';
 import 'app_bottom_bar.dart';
 import 'package:go_router/go_router.dart';
 
@@ -47,11 +48,11 @@ class AppScaffold extends StatelessWidget {
   }
 
   int _tabIndex(String location) {
-    if (location.startsWith('/home/routes')) return 1;
-    if (location.startsWith('/home/qr')) return 2;
-    if (location.startsWith('/home/messages')) return 3;
-    if (location.startsWith('/home/profile')) return 4;
-    if (location.startsWith('/home/security')) return 4;
+    if (AppRoutes.isInSection(location, AppRoutes.homeRoutes)) return 1;
+    if (AppRoutes.isInSection(location, AppRoutes.homeQr)) return 2;
+    if (AppRoutes.isInSection(location, AppRoutes.homeMessages)) return 3;
+    if (AppRoutes.isInSection(location, AppRoutes.homeProfile)) return 4;
+    if (AppRoutes.isInSection(location, AppRoutes.homeSecurity)) return 4;
     return 0;
   }
 }
@@ -146,13 +147,13 @@ class _UserMenuButton extends ConsumerWidget {
     }
 
     final targetRoute = switch (action) {
-      _UserMenuAction.status => '/home/status',
-      _UserMenuAction.profile => '/home/profile',
-      _UserMenuAction.vehicle => '/home/vehicle',
-      _UserMenuAction.document => '/home/documents',
-      _UserMenuAction.security => '/home/security',
-      _UserMenuAction.messages => '/home/messages',
-      _UserMenuAction.logout => '/login',
+      _UserMenuAction.status => AppRoutes.homeStatus,
+      _UserMenuAction.profile => AppRoutes.homeProfile,
+      _UserMenuAction.vehicle => AppRoutes.homeVehicle,
+      _UserMenuAction.document => AppRoutes.homeDocuments,
+      _UserMenuAction.security => AppRoutes.homeSecurity,
+      _UserMenuAction.messages => AppRoutes.homeMessages,
+      _UserMenuAction.logout => AppRoutes.login,
     };
 
     final location = GoRouterState.of(context).matchedLocation;

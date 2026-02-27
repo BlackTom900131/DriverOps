@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:video_player/video_player.dart';
+import '../../../app/navigation/app_routes.dart';
 import '../../../shared/widgets/app_scaffold.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -112,7 +113,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       const SizedBox(height: 52),
                       FilledButton.icon(
-                        onPressed: () => context.go('/home/start-workday'),
+                        onPressed: () => context.go(AppRoutes.homeStartWorkday),
                         icon: const Icon(Icons.play_arrow_rounded, size: 24),
                         label: const Text('Start Workday'),
                       ),

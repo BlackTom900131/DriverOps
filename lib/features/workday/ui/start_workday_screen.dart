@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../app/navigation/app_routes.dart';
 import '../state/workday_state.dart';
 import '../../offline_queue/state/offline_queue_state.dart';
 import '../../../shared/widgets/app_scaffold.dart';
@@ -62,7 +63,7 @@ class _StartWorkdayScreenState extends ConsumerState<StartWorkdayScreen> {
                           : () {
                               ref.read(workdayProvider.notifier).start();
                               ref.read(offlineQueueProvider.notifier).addMockEvent();
-                              context.go('/home');
+                              context.go(AppRoutes.home);
                             },
                       child: const Text('Start Workday'),
                     ),

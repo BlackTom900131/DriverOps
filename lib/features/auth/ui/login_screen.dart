@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:video_player/video_player.dart';
+import '../../../app/navigation/app_routes.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -121,7 +122,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                     child: FilledButton.icon(
-                      onPressed: () => context.go('/login/details'),
+                      onPressed: () => context.go(AppRoutes.loginDetails),
                       icon: const Icon(Icons.login_rounded),
                       style: FilledButton.styleFrom(
                         backgroundColor: Colors.transparent,
