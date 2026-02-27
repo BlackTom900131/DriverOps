@@ -64,7 +64,7 @@ class _SplashScreenState extends State<SplashScreen> {
               ),
               const SizedBox(height: 14),
               const Text(
-                'Driver Operations',
+                'Operaciones del conductor',
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.w800,

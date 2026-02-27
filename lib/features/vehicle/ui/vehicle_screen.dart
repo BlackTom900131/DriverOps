@@ -19,13 +19,13 @@ class _VehicleScreenState extends State<VehicleScreen> {
   static const String _dropdownOptionsAsset =
       'Assets/vehicle_dropdown_options.json';
   static const List<String> _defaultVehicleTypes = [
-    'Car',
-    'Truck',
-    'Bicycle',
-    'Motorcycle',
-    'Van',
-    'Bus',
-    'Other',
+    'Coche',
+    'Camión',
+    'Bicicleta',
+    'Motocicleta',
+    'Furgoneta',
+    'Autobús',
+    'Otro',
   ];
   static const List<String> _defaultVehicleBrands = [
     'Toyota',
@@ -58,7 +58,7 @@ class _VehicleScreenState extends State<VehicleScreen> {
     'Tata',
     'Mahindra',
     'BYD',
-    'Other',
+    'Otro',
   ];
   static const List<String> _defaultVehicleModels = [
     'Corolla',
@@ -79,7 +79,7 @@ class _VehicleScreenState extends State<VehicleScreen> {
     'Sportage',
     'Polo',
     'Swift',
-    'Other',
+    'Otro',
   ];
   static const String _prefType = 'vehicle_type';
   static const String _prefBrand = 'vehicle_brand';
@@ -107,7 +107,7 @@ class _VehicleScreenState extends State<VehicleScreen> {
   bool _isSaving = false;
   OverlayEntry? _toastEntry;
 
-  String _savedType = 'Truck';
+  String _savedType = 'Camión';
   String _savedBrand = 'Toyota';
   String _savedModel = 'Hilux';
   String _savedYear = '2022';
@@ -162,7 +162,7 @@ class _VehicleScreenState extends State<VehicleScreen> {
       context: context,
       builder: (dialogContext) {
         return AlertDialog(
-          title: const Text('Select vehicle year'),
+          title: const Text('Seleccionar año del vehículo'),
           content: SizedBox(
             width: 320,
             height: 300,
@@ -178,7 +178,7 @@ class _VehicleScreenState extends State<VehicleScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(),
-              child: const Text('Cancel'),
+              child: const Text('Cancelar'),
             ),
           ],
         );
@@ -278,18 +278,18 @@ class _VehicleScreenState extends State<VehicleScreen> {
       context: context,
       builder: (dialogContext) {
         return AlertDialog(
-          title: const Text('Confirm Save'),
+          title: const Text('Confirmar guardado'),
           content: const Text(
-            'Do you want to save vehicle information locally?',
+            '¿Desea guardar la información del vehículo localmente?',
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(false),
-              child: const Text('Cancel'),
+              child: const Text('Cancelar'),
             ),
             FilledButton(
               onPressed: () => Navigator.of(dialogContext).pop(true),
-              child: const Text('Confirm'),
+              child: const Text('Confirmar'),
             ),
           ],
         );
@@ -300,13 +300,13 @@ class _VehicleScreenState extends State<VehicleScreen> {
 
     setState(() => _isSaving = true);
     try {
-      _savedType = _selectedVehicleType == 'Other'
+      _savedType = _selectedVehicleType == 'Otro'
           ? _customTypeCtrl.text.trim()
           : _selectedVehicleType;
-      _savedBrand = _selectedBrand == 'Other'
+      _savedBrand = _selectedBrand == 'Otro'
           ? _customBrandCtrl.text.trim()
           : _selectedBrand;
-      _savedModel = _selectedModel == 'Other'
+      _savedModel = _selectedModel == 'Otro'
           ? _customModelCtrl.text.trim()
           : _selectedModel;
       _savedYear = _yearCtrl.text.trim();
@@ -317,7 +317,7 @@ class _VehicleScreenState extends State<VehicleScreen> {
       await _saveVehicleDataLocally();
 
       if (!mounted) return;
-      _showToast('Vehicle information saved locally');
+      _showToast('Información del vehículo guardada localmente');
     } finally {
       if (mounted) {
         setState(() => _isSaving = false);
@@ -369,31 +369,31 @@ class _VehicleScreenState extends State<VehicleScreen> {
       if (value.isNotEmpty) values.add(value);
     }
     if (values.isEmpty) return List<String>.from(fallback);
-    values.add('Other');
+    values.add('Otro');
     return values.toList();
   }
 
   void _syncSelectionsWithSavedValues() {
     _selectedVehicleType = _vehicleTypes.contains(_savedType)
         ? _savedType
-        : 'Other';
-    _customTypeCtrl.text = _selectedVehicleType == 'Other' ? _savedType : '';
+        : 'Otro';
+    _customTypeCtrl.text = _selectedVehicleType == 'Otro' ? _savedType : '';
 
     _selectedBrand = _vehicleBrands.contains(_savedBrand)
         ? _savedBrand
-        : 'Other';
-    _customBrandCtrl.text = _selectedBrand == 'Other' ? _savedBrand : '';
+        : 'Otro';
+    _customBrandCtrl.text = _selectedBrand == 'Otro' ? _savedBrand : '';
 
     _selectedModel = _vehicleModels.contains(_savedModel)
         ? _savedModel
-        : 'Other';
-    _customModelCtrl.text = _selectedModel == 'Other' ? _savedModel : '';
+        : 'Otro';
+    _customModelCtrl.text = _selectedModel == 'Otro' ? _savedModel : '';
   }
 
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
-      title: 'Vehicle information',
+      title: 'Información del vehículo',
       body: ListView(
         padding: const EdgeInsets.only(top: 8, bottom: 20),
         children: [
@@ -435,7 +435,7 @@ class _VehicleScreenState extends State<VehicleScreen> {
                         ? null
                         : () => _pickVehiclePhoto(ImageSource.gallery),
                     icon: const Icon(Icons.photo_library_outlined),
-                    label: const Text('From Gallery'),
+                    label: const Text('Desde la galería'),
                   ),
                 ),
                 const SizedBox(width: 10),
@@ -445,7 +445,7 @@ class _VehicleScreenState extends State<VehicleScreen> {
                         ? null
                         : () => _pickVehiclePhoto(ImageSource.camera),
                     icon: const Icon(Icons.photo_camera_outlined),
-                    label: const Text('From Camera'),
+                    label: const Text('Desde la cámara'),
                   ),
                 ),
               ],
@@ -462,7 +462,7 @@ class _VehicleScreenState extends State<VehicleScreen> {
                     DropdownButtonFormField<String>(
                       initialValue: _selectedVehicleType,
                       decoration: const InputDecoration(
-                        labelText: 'Vehicle type',
+                        labelText: 'Tipo de vehículo',
                         prefixIcon: Icon(Icons.local_shipping_outlined),
                       ),
                       items: _vehicleTypes
@@ -478,25 +478,27 @@ class _VehicleScreenState extends State<VehicleScreen> {
                         setState(() => _selectedVehicleType = value);
                       },
                       validator: (v) =>
-                          (v == null || v.isEmpty) ? 'Required' : null,
+                          (v == null || v.isEmpty) ? 'Requerido' : null,
                     ),
-                    if (_selectedVehicleType == 'Other') ...[
+                    if (_selectedVehicleType == 'Otro') ...[
                       const SizedBox(height: 12),
                       TextFormField(
                         controller: _customTypeCtrl,
                         decoration: const InputDecoration(
-                          labelText: 'Specify vehicle type',
+                          labelText: 'Especifique el tipo de vehículo',
                           prefixIcon: Icon(Icons.edit_outlined),
                         ),
                         validator: (v) =>
-                            (v == null || v.trim().isEmpty) ? 'Required' : null,
+                            (v == null || v.trim().isEmpty)
+                                ? 'Requerido'
+                                : null,
                       ),
                     ],
                     const SizedBox(height: 12),
                     DropdownButtonFormField<String>(
                       initialValue: _selectedBrand,
                       decoration: const InputDecoration(
-                        labelText: 'Brand',
+                        labelText: 'Marca',
                         prefixIcon: Icon(
                           Icons.precision_manufacturing_outlined,
                         ),
@@ -514,25 +516,27 @@ class _VehicleScreenState extends State<VehicleScreen> {
                         setState(() => _selectedBrand = value);
                       },
                       validator: (v) =>
-                          (v == null || v.isEmpty) ? 'Required' : null,
+                          (v == null || v.isEmpty) ? 'Requerido' : null,
                     ),
-                    if (_selectedBrand == 'Other') ...[
+                    if (_selectedBrand == 'Otro') ...[
                       const SizedBox(height: 12),
                       TextFormField(
                         controller: _customBrandCtrl,
                         decoration: const InputDecoration(
-                          labelText: 'Specify brand',
+                          labelText: 'Especifique la marca',
                           prefixIcon: Icon(Icons.edit_outlined),
                         ),
                         validator: (v) =>
-                            (v == null || v.trim().isEmpty) ? 'Required' : null,
+                            (v == null || v.trim().isEmpty)
+                                ? 'Requerido'
+                                : null,
                       ),
                     ],
                     const SizedBox(height: 12),
                     DropdownButtonFormField<String>(
                       initialValue: _selectedModel,
                       decoration: const InputDecoration(
-                        labelText: 'Model',
+                        labelText: 'Modelo',
                         prefixIcon: Icon(Icons.directions_car_outlined),
                       ),
                       items: _vehicleModels
@@ -548,18 +552,20 @@ class _VehicleScreenState extends State<VehicleScreen> {
                         setState(() => _selectedModel = value);
                       },
                       validator: (v) =>
-                          (v == null || v.isEmpty) ? 'Required' : null,
+                          (v == null || v.isEmpty) ? 'Requerido' : null,
                     ),
-                    if (_selectedModel == 'Other') ...[
+                    if (_selectedModel == 'Otro') ...[
                       const SizedBox(height: 12),
                       TextFormField(
                         controller: _customModelCtrl,
                         decoration: const InputDecoration(
-                          labelText: 'Specify model',
+                          labelText: 'Especifique el modelo',
                           prefixIcon: Icon(Icons.edit_outlined),
                         ),
                         validator: (v) =>
-                            (v == null || v.trim().isEmpty) ? 'Required' : null,
+                            (v == null || v.trim().isEmpty)
+                                ? 'Requerido'
+                                : null,
                       ),
                     ],
                     const SizedBox(height: 12),
@@ -568,31 +574,37 @@ class _VehicleScreenState extends State<VehicleScreen> {
                       readOnly: true,
                       onTap: _pickYear,
                       decoration: const InputDecoration(
-                        labelText: 'Year',
+                        labelText: 'Año',
                         prefixIcon: Icon(Icons.calendar_today_outlined),
                       ),
                       validator: (v) =>
-                          (v == null || v.trim().isEmpty) ? 'Required' : null,
+                          (v == null || v.trim().isEmpty)
+                              ? 'Requerido'
+                              : null,
                     ),
                     const SizedBox(height: 12),
                     TextFormField(
                       controller: _plateCtrl,
                       decoration: const InputDecoration(
-                        labelText: 'License plate number',
+                        labelText: 'Número de placa',
                         prefixIcon: Icon(Icons.confirmation_number_outlined),
                       ),
                       validator: (v) =>
-                          (v == null || v.trim().isEmpty) ? 'Required' : null,
+                          (v == null || v.trim().isEmpty)
+                              ? 'Requerido'
+                              : null,
                     ),
                     const SizedBox(height: 12),
                     TextFormField(
                       controller: _registrationCtrl,
                       decoration: const InputDecoration(
-                        labelText: 'Vehicle registration number',
+                        labelText: 'Número de registro del vehículo',
                         prefixIcon: Icon(Icons.assignment_outlined),
                       ),
                       validator: (v) =>
-                          (v == null || v.trim().isEmpty) ? 'Required' : null,
+                          (v == null || v.trim().isEmpty)
+                              ? 'Requerido'
+                              : null,
                     ),
                   ],
                 ),
@@ -615,7 +627,7 @@ class _VehicleScreenState extends State<VehicleScreen> {
                             _registrationCtrl.text = _savedRegistration;
                             setState(() {});
                           },
-                    child: const Text('Cancel'),
+                    child: const Text('Cancelar'),
                   ),
                 ),
                 const SizedBox(width: 10),
@@ -628,7 +640,7 @@ class _VehicleScreenState extends State<VehicleScreen> {
                             width: 20,
                             child: CircularProgressIndicator(strokeWidth: 2.2),
                           )
-                        : const Text('Save Vehicle'),
+                        : const Text('Guardar vehículo'),
                   ),
                 ),
               ],

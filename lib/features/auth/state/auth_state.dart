@@ -5,12 +5,14 @@ import '../../../shared/models/driver.dart';
 
 class AuthState {
   final bool isLoggedIn;
+  final String driverId;
   final DriverStatus driverStatus;
   final String driverName;
   final String? rejectionReason;
 
   const AuthState({
     required this.isLoggedIn,
+    required this.driverId,
     required this.driverStatus,
     required this.driverName,
     this.rejectionReason,
@@ -18,12 +20,14 @@ class AuthState {
 
   AuthState copyWith({
     bool? isLoggedIn,
+    String? driverId,
     DriverStatus? driverStatus,
     String? driverName,
     String? rejectionReason,
   }) {
     return AuthState(
       isLoggedIn: isLoggedIn ?? this.isLoggedIn,
+      driverId: driverId ?? this.driverId,
       driverStatus: driverStatus ?? this.driverStatus,
       driverName: driverName ?? this.driverName,
       rejectionReason: rejectionReason ?? this.rejectionReason,
@@ -40,8 +44,9 @@ class AuthStateNotifier extends StateNotifier<AuthState> {
     : super(
         const AuthState(
           isLoggedIn: false,
+          driverId: 'DRV-001',
           driverStatus: DriverStatus.pending,
-          driverName: 'Driver',
+          driverName: 'Conductor',
           rejectionReason: null,
         ),
       );
@@ -60,8 +65,9 @@ class AuthStateNotifier extends StateNotifier<AuthState> {
     _emit(
       const AuthState(
         isLoggedIn: false,
+        driverId: 'DRV-001',
         driverStatus: DriverStatus.pending,
-        driverName: 'Driver',
+        driverName: 'Conductor',
       ),
     );
   }

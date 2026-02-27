@@ -36,7 +36,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
-      title: 'Driver Operations',
+      title: 'Operaciones del conductor',
       showOfflineBanner: false,
       body: Stack(
         fit: StackFit.expand,
@@ -82,10 +82,10 @@ class _HomeScreenState extends State<HomeScreen> {
                             children: [
                               TextSpan(
                                 text:
-                                    'Drive smart. Deliver safely. Earn more with ',
+                                    'Conduce con inteligencia. Entrega con seguridad. Gana más con ',
                               ),
                               TextSpan(
-                                text: 'Our Company.',
+                                text: 'Nuestra Empresa.',
                                 style: TextStyle(
                                   color: Color(0xFF7EC8FF),
                                   fontWeight: FontWeight.w800,
@@ -115,7 +115,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       FilledButton.icon(
                         onPressed: () => context.go(AppRoutes.homeStartWorkday),
                         icon: const Icon(Icons.play_arrow_rounded, size: 24),
-                        label: const Text('Start Workday'),
+                        label: const Text('Iniciar jornada'),
                       ),
                     ],
                   ),

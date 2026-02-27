@@ -84,7 +84,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 12),
                   const Spacer(),
                   Text(
-                    'Welcome to our company.',
+                    'Bienvenido a nuestra empresa.',
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                       color: const Color(0xFFEAF4FF),
@@ -103,7 +103,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    'Smarter routes. Safer deliveries. Stronger earnings with Our Transport.',
+                    'Rutas más inteligentes. Entregas más seguras. Mayores ingresos con Nuestro Transporte.',
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: const Color(0xFFDCEBFF),
@@ -135,7 +135,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                       label: const Text(
-                        'Login',
+                        'Iniciar sesión',
                         style: TextStyle(
                           fontSize: 17,
                           fontWeight: FontWeight.w800,

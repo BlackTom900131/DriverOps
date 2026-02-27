@@ -19,8 +19,8 @@ class RouteMapScreen extends ConsumerWidget {
 
     if (route == null) {
       return AppScaffold(
-        title: 'Route Map',
-        body: const Center(child: Text('Route not found.')),
+        title: 'Mapa de ruta',
+        body: const Center(child: Text('Ruta no encontrada.')),
       );
     }
 
@@ -29,9 +29,9 @@ class RouteMapScreen extends ConsumerWidget {
         .toList();
     if (stopsWithCoordinates.isEmpty) {
       return AppScaffold(
-        title: 'Route Map',
+        title: 'Mapa de ruta',
         body: const Center(
-          child: Text('No coordinate data available for this route.'),
+          child: Text('No hay datos de coordenadas para esta ruta.'),
         ),
       );
     }
@@ -69,7 +69,7 @@ class RouteMapScreen extends ConsumerWidget {
         : <Polyline>{};
 
     return AppScaffold(
-      title: 'Route Map $routeId',
+      title: 'Mapa de ruta $routeId',
       body: Column(
         children: [
           Expanded(
@@ -91,7 +91,7 @@ class RouteMapScreen extends ConsumerWidget {
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      '${route.stops.length} stops | ${stopsWithCoordinates.length} with coordinates',
+                      '${route.stops.length} paradas | ${stopsWithCoordinates.length} con coordenadas',
                     ),
                   ),
                 ],

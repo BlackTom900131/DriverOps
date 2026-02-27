@@ -27,7 +27,7 @@ class OfflineBanner extends ConsumerWidget {
           const SizedBox(width: 10),
           Expanded(
             child: Text(
-              'You are offline.',
+              'Estás sin conexión.',
               style: const TextStyle(
                 color: Color(0xFF723600),
                 fontWeight: FontWeight.w600,

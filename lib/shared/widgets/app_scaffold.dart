@@ -73,56 +73,56 @@ class _UserMenuButton extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return PopupMenuButton<_UserMenuAction>(
-      tooltip: 'User menu',
+      tooltip: 'Menú de usuario',
       onSelected: (action) => _handleSelection(context, ref, action),
       itemBuilder: (context) => const [
         PopupMenuItem<_UserMenuAction>(
           value: _UserMenuAction.profile,
           child: _UserMenuItemContent(
             icon: Icons.person_outline,
-            label: 'Profile',
+            label: 'Perfil',
           ),
         ),
         PopupMenuItem<_UserMenuAction>(
           value: _UserMenuAction.status,
           child: _UserMenuItemContent(
             icon: Icons.verified_user_outlined,
-            label: 'Status',
+            label: 'Estado',
           ),
         ),
         PopupMenuItem<_UserMenuAction>(
           value: _UserMenuAction.vehicle,
           child: _UserMenuItemContent(
             icon: Icons.local_shipping_outlined,
-            label: 'Vehicle',
+            label: 'Vehículo',
           ),
         ),
         PopupMenuItem<_UserMenuAction>(
           value: _UserMenuAction.document,
           child: _UserMenuItemContent(
             icon: Icons.description_outlined,
-            label: 'Document',
+            label: 'Documento',
           ),
         ),
         PopupMenuItem<_UserMenuAction>(
           value: _UserMenuAction.security,
           child: _UserMenuItemContent(
             icon: Icons.security_outlined,
-            label: 'Security',
+            label: 'Seguridad',
           ),
         ),
         PopupMenuItem<_UserMenuAction>(
           value: _UserMenuAction.messages,
           child: _UserMenuItemContent(
             icon: Icons.message_outlined,
-            label: 'Messages',
+            label: 'Mensajes',
           ),
         ),
         PopupMenuItem<_UserMenuAction>(
           value: _UserMenuAction.logout,
           child: _UserMenuItemContent(
             icon: Icons.logout_outlined,
-            label: 'Logout',
+            label: 'Cerrar sesión',
           ),
         ),
       ],

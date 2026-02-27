@@ -16,7 +16,7 @@ class StatusScreen extends ConsumerWidget {
     final color = _colorFor(status);
 
     return AppScaffold(
-      title: 'Driver Status',
+      title: 'Estado del conductor',
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(24),
@@ -48,12 +48,12 @@ class StatusScreen extends ConsumerWidget {
 
   String _labelFor(DriverStatus status) {
     return switch (status) {
-      DriverStatus.none => 'No action detected.',
-      DriverStatus.pending => 'Your request is currently pending review.',
-      DriverStatus.underVerification => 'Your account is under verification.',
-      DriverStatus.approved => 'You have been approved.',
-      DriverStatus.rejected => 'You have been rejected.',
-      DriverStatus.suspended => 'Your account has been suspended.',
+      DriverStatus.none => 'No se detectó ninguna acción.',
+      DriverStatus.pending => 'Su solicitud está pendiente de revisión.',
+      DriverStatus.underVerification => 'Su cuenta está en verificación.',
+      DriverStatus.approved => 'Ha sido aprobado.',
+      DriverStatus.rejected => 'Ha sido rechazado.',
+      DriverStatus.suspended => 'Su cuenta ha sido suspendida.',
     };
   }
 

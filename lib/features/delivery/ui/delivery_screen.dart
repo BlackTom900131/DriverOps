@@ -22,7 +22,7 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
-      title: 'Delivery - ${widget.stopId}',
+      title: 'Entrega - ${widget.stopId}',
       body: ListView(
         padding: const EdgeInsets.only(bottom: 20),
         children: [
@@ -30,15 +30,15 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
           Card(
             child: ListTile(
               leading: const Icon(Icons.qr_code_scanner_outlined),
-              title: const Text('Mandatory pre-delivery scan'),
+              title: const Text('Escaneo previo a la entrega obligatorio'),
               subtitle: Text(
                 preDeliveryScanDone
-                    ? 'Scan completed. You can proceed.'
-                    : 'You must scan package barcode/QR before status selection.',
+                    ? 'Escaneo completado. Puede continuar.'
+                    : 'Debe escanear el código de barras/QR del paquete antes de seleccionar el estado.',
               ),
               trailing: FilledButton(
                 onPressed: () => setState(() => preDeliveryScanDone = true),
-                child: Text(preDeliveryScanDone ? 'Scanned' : 'Scan now'),
+                child: Text(preDeliveryScanDone ? 'Escaneado' : 'Escanear ahora'),
               ),
             ),
           ),
@@ -49,7 +49,7 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
-                    'Delivery status',
+                    'Estado de la entrega',
                     style: TextStyle(fontWeight: FontWeight.w700),
                   ),
                   const SizedBox(height: 10),
@@ -58,12 +58,12 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
                       ButtonSegment(
                         value: DeliveryDecision.delivered,
                         icon: Icon(Icons.check_circle_outline),
-                        label: Text('Delivered'),
+                        label: Text('Entregado'),
                       ),
                       ButtonSegment(
                         value: DeliveryDecision.failed,
                         icon: Icon(Icons.error_outline),
-                        label: Text('Failed'),
+                        label: Text('Fallido'),
                       ),
                     ],
                     selected: {decision},
@@ -73,7 +73,7 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    'Status changes after submission require supervisor authorization.',
+                    'Los cambios de estado después del envío requieren autorización del supervisor.',
                     style: TextStyle(color: Colors.grey.shade700),
                   ),
                   const SizedBox(height: 12),
@@ -99,7 +99,7 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
                                 );
                               }
                             },
-                      child: const Text('Continue'),
+                      child: const Text('Continuar'),
                     ),
                   ),
                 ],

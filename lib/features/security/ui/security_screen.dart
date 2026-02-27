@@ -8,29 +8,29 @@ class SecurityScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
-      title: 'User Security',
+      title: 'Seguridad del usuario',
       body: ListView(
         padding: const EdgeInsets.only(top: 8, bottom: 16),
         children: const [
           Card(
             child: ListTile(
               leading: Icon(Icons.lock_outline),
-              title: Text('Change password'),
-              subtitle: Text('Update your account password regularly.'),
+              title: Text('Cambiar contraseña'),
+              subtitle: Text('Actualice la contraseña de su cuenta con regularidad.'),
             ),
           ),
           Card(
             child: ListTile(
               leading: Icon(Icons.phonelink_lock_outlined),
-              title: Text('Two-factor authentication'),
-              subtitle: Text('Enable for extra account protection.'),
+              title: Text('Autenticación de dos factores'),
+              subtitle: Text('Habilítela para mayor protección de la cuenta.'),
             ),
           ),
           Card(
             child: ListTile(
               leading: Icon(Icons.history_toggle_off_outlined),
-              title: Text('Login activity'),
-              subtitle: Text('Review recent login sessions and devices.'),
+              title: Text('Actividad de inicio de sesión'),
+              subtitle: Text('Revise sesiones y dispositivos recientes.'),
             ),
           ),
         ],

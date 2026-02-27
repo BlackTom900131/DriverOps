@@ -12,7 +12,7 @@ class OfflineQueueScreen extends ConsumerWidget {
     final notifier = ref.read(offlineQueueProvider.notifier);
 
     return AppScaffold(
-      title: 'Offline Queue',
+      title: 'Cola sin conexión',
       body: ListView(
         padding: const EdgeInsets.only(bottom: 20),
         children: [
@@ -22,25 +22,28 @@ class OfflineQueueScreen extends ConsumerWidget {
               leading: Icon(
                 state.isOffline ? Icons.cloud_off_outlined : Icons.cloud_done_outlined,
               ),
-              title: Text(state.isOffline ? 'Mode: OFFLINE' : 'Mode: ONLINE'),
-              subtitle: Text('Pending events: ${state.pendingEvents}'),
+              title: Text(state.isOffline ? 'Modo: SIN CONEXIÓN' : 'Modo: EN LÍNEA'),
+              subtitle: Text('Eventos pendientes: ${state.pendingEvents}'),
               trailing: FilledButton(
                 onPressed: notifier.toggleOffline,
-                child: Text(state.isOffline ? 'Go Online' : 'Go Offline'),
+                child: Text(state.isOffline ? 'Conectarse' : 'Desconectarse'),
               ),
             ),
           ),
           Card(
             child: ListTile(
               leading: const Icon(Icons.sync_outlined),
-              title: const Text('Sync queue now'),
-              subtitle: const Text('Retries and conflict handling are backend-driven.'),
+              title: const Text('Sincronizar cola ahora'),
+              subtitle:
+                  const Text('Los reintentos y conflictos dependen del backend.'),
               onTap: state.isOffline || state.pendingEvents == 0
                   ? null
                   : () {
                       notifier.clear();
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Queue synced successfully (mock).')),
+                        const SnackBar(
+                          content: Text('Cola sincronizada correctamente (simulado).'),
+                        ),
                       );
                     },
             ),
@@ -48,14 +51,14 @@ class OfflineQueueScreen extends ConsumerWidget {
           Card(
             child: ListTile(
               leading: const Icon(Icons.add),
-              title: const Text('Add mock queued event'),
+              title: const Text('Agregar evento simulado en cola'),
               onTap: notifier.addMockEvent,
             ),
           ),
           Card(
             child: ListTile(
               leading: const Icon(Icons.delete_outline),
-              title: const Text('Clear local queue'),
+              title: const Text('Limpiar cola local'),
               onTap: notifier.clear,
             ),
           ),

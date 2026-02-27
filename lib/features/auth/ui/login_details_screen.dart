@@ -16,7 +16,7 @@ class _LoginDetailsScreenState extends ConsumerState<LoginDetailsScreen> {
   final _formKey = GlobalKey<FormState>();
   final _name = TextEditingController(text: 'Razak');
   final _email = TextEditingController(text: 'driver@company.com');
-  final _pass = TextEditingController(text: 'password');
+  final _pass = TextEditingController(text: 'contrasena');
 
   @override
   void dispose() {
@@ -60,26 +60,30 @@ class _LoginDetailsScreenState extends ConsumerState<LoginDetailsScreen> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          'Welcome to our company.',
+                          'Bienvenido a nuestra empresa.',
                           style: Theme.of(context).textTheme.headlineSmall,
                         ),
                         const SizedBox(height: 12),
                         TextFormField(
                           controller: _email,
-                          decoration: const InputDecoration(labelText: 'Email'),
+                          decoration: const InputDecoration(
+                            labelText: 'Correo electrónico',
+                          ),
                           validator: (v) => (v == null || !v.contains('@'))
-                              ? 'Invalid email'
+                              ? 'Correo inválido'
                               : null,
                         ),
                         const SizedBox(height: 12),
                         TextFormField(
                           controller: _pass,
                           decoration: const InputDecoration(
-                            labelText: 'Password',
+                            labelText: 'Contraseña',
                           ),
                           obscureText: true,
                           validator: (v) =>
-                              (v == null || v.length < 3) ? 'Too short' : null,
+                              (v == null || v.length < 3)
+                                  ? 'Demasiado corta'
+                                  : null,
                         ),
                         const SizedBox(height: 16),
                         SizedBox(
@@ -92,7 +96,7 @@ class _LoginDetailsScreenState extends ConsumerState<LoginDetailsScreen> {
                                   .mockLogin(_name.text.trim());
                               context.go(AppRoutes.home);
                             },
-                            child: const Text('Login'),
+                            child: const Text('Iniciar sesión'),
                           ),
                         ),
                         const SizedBox(height: 10),
@@ -101,14 +105,14 @@ class _LoginDetailsScreenState extends ConsumerState<LoginDetailsScreen> {
                           crossAxisAlignment: WrapCrossAlignment.center,
                           children: [
                             Text(
-                              "If you didn't sign up yet, ",
+                              'Si aún no te registraste, ',
                               style: Theme.of(context).textTheme.bodyMedium
                                   ?.copyWith(color: const Color(0xFF5F6368)),
                             ),
                             InkWell(
                               onTap: () => context.go(AppRoutes.registration),
                               child: const Text(
-                                'Sign up',
+                                'Regístrate',
                                 style: TextStyle(
                                   color: Color(0xFF0A84FF),
                                   fontWeight: FontWeight.w700,

@@ -81,12 +81,12 @@ class Driver {
 extension DriverStatusX on DriverStatus {
   String get label {
     return switch (this) {
-      DriverStatus.none => 'No action.',
-      DriverStatus.pending => 'Pending',
-      DriverStatus.underVerification => 'Under Verification',
-      DriverStatus.approved => 'Approved',
-      DriverStatus.rejected => 'Rejected',
-      DriverStatus.suspended => 'Suspended',
+      DriverStatus.none => 'Sin acción.',
+      DriverStatus.pending => 'Pendiente',
+      DriverStatus.underVerification => 'En verificación',
+      DriverStatus.approved => 'Aprobado',
+      DriverStatus.rejected => 'Rechazado',
+      DriverStatus.suspended => 'Suspendido',
     };
   }
 }

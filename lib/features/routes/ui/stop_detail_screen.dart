@@ -18,10 +18,22 @@ class StopDetailScreen extends ConsumerWidget {
 
   String _stopTypeLabel(StopType? type) {
     return switch (type) {
-      StopType.pickup => 'Pickup',
-      StopType.delivery => 'Delivery',
-      StopType.mixed => 'Mixed',
+      StopType.pickup => 'Recogida',
+      StopType.delivery => 'Entrega',
+      StopType.mixed => 'Mixta',
       null => '-',
+    };
+  }
+
+  String _stopStatusLabel(StopStatus? status, StopType? type) {
+    if (status == null) return '-';
+    if (status == StopStatus.done && type == StopType.pickup) {
+      return 'RECOGIDO';
+    }
+    return switch (status) {
+      StopStatus.pending => 'PENDIENTE',
+      StopStatus.inProgress => 'EN PROGRESO',
+      StopStatus.done => 'COMPLETADO',
     };
   }
 
@@ -38,7 +50,7 @@ class StopDetailScreen extends ConsumerWidget {
     final stopPosition = stopIndex >= 0 ? stopIndex + 1 : null;
 
     return AppScaffold(
-      title: 'Verify Stop',
+      title: 'Verificar parada',
       body: ListView(
         padding: const EdgeInsets.only(bottom: 20),
         children: [
@@ -81,7 +93,7 @@ class StopDetailScreen extends ConsumerWidget {
                         ],
                       ),
                       child: Text(
-                        'Stop ${stopPosition ?? '-'}',
+                        'Parada ${stopPosition ?? '-'}',
                         style: Theme.of(context).textTheme.titleMedium
                             ?.copyWith(
                               fontWeight: FontWeight.w800,
@@ -92,7 +104,7 @@ class StopDetailScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      'Stop position details',
+                      'Detalles de la posición de la parada',
                       style: Theme.of(context).textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.w700,
                       ),
@@ -111,29 +123,36 @@ class StopDetailScreen extends ConsumerWidget {
                       child: Column(
                         children: [
                           _InfoRow(
-                            label: 'Position',
+                            label: 'Posición',
                             value: '${stopPosition ?? '-'} / $totalStops',
                           ),
                           const SizedBox(height: 8),
-                          _InfoRow(label: 'Stop ID', value: stopId),
+                          _InfoRow(label: 'ID de parada', value: stopId),
                           const SizedBox(height: 8),
                           _InfoRow(
-                            label: 'Customer',
+                            label: 'Cliente',
                             value: stop?.customerName ?? '-',
                           ),
                           const SizedBox(height: 8),
                           _InfoRow(
-                            label: 'Address',
+                            label: 'Dirección',
                             value: stop?.address ?? '-',
                           ),
                           const SizedBox(height: 8),
                           _InfoRow(
-                            label: 'Contact',
+                            label: 'Contacto',
                             value: stop?.customerContact ?? '-',
                           ),
                           const SizedBox(height: 8),
                           _InfoRow(
-                            label: 'Type',
+                            label: 'Paquetes esp.',
+                            value: stop == null
+                                ? '-'
+                                : stop.expectedPackages.toString(),
+                          ),
+                          const SizedBox(height: 8),
+                          _InfoRow(
+                            label: 'Tipo',
                             value: _stopTypeLabel(stop?.type),
                           ),
                           const SizedBox(height: 8),
@@ -143,7 +162,7 @@ class StopDetailScreen extends ConsumerWidget {
                               SizedBox(
                                 width: 80,
                                 child: Text(
-                                  'Status',
+                                  'Estado',
                                   style: Theme.of(context).textTheme.bodyMedium
                                       ?.copyWith(
                                         fontWeight: FontWeight.w700,
@@ -162,7 +181,7 @@ class StopDetailScreen extends ConsumerWidget {
                                   borderRadius: BorderRadius.circular(999),
                                 ),
                                 child: Text(
-                                  (stop?.status.name ?? '-').toUpperCase(),
+                                  _stopStatusLabel(stop?.status, stop?.type),
                                   style: Theme.of(context).textTheme.labelSmall
                                       ?.copyWith(
                                         fontWeight: FontWeight.w700,
@@ -186,7 +205,7 @@ class StopDetailScreen extends ConsumerWidget {
                       )
                     else
                       const Text(
-                        'Select one action below to verify this stop.',
+                        'Seleccione una acción abajo para verificar esta parada.',
                         style: TextStyle(fontWeight: FontWeight.w500),
                       ),
                     const SizedBox(height: 10),
@@ -195,10 +214,11 @@ class StopDetailScreen extends ConsumerWidget {
                       child: FilledButton.icon(
                         onPressed: isBlocked
                             ? null
-                            : () =>
-                                context.push(AppRoutes.stopPickup(routeId, stopId)),
+                            : () => context.push(
+                                AppRoutes.stopPickup(routeId, stopId),
+                              ),
                         icon: const Icon(Icons.qr_code_scanner),
-                        label: const Text('Pickup'),
+                        label: const Text('Recogida'),
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -211,7 +231,7 @@ class StopDetailScreen extends ConsumerWidget {
                                 AppRoutes.stopDelivery(routeId, stopId),
                               ),
                         icon: const Icon(Icons.local_shipping_outlined),
-                        label: const Text('Delivery'),
+                        label: const Text('Entrega'),
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -221,24 +241,24 @@ class StopDetailScreen extends ConsumerWidget {
                         onPressed: () => showDialog(
                           context: context,
                           builder: (_) => AlertDialog(
-                            title: const Text('Skipping stop'),
+                            title: const Text('Omitir parada'),
                             content: const Text(
-                              'Skipping is restricted. A supervisor justification is required.',
+                              'Omitir está restringido. Se requiere justificación del supervisor.',
                             ),
                             actions: [
                               TextButton(
                                 onPressed: () => Navigator.pop(context),
-                                child: const Text('Cancel'),
+                                child: const Text('Cancelar'),
                               ),
                               FilledButton(
                                 onPressed: () => Navigator.pop(context),
-                                child: const Text('Submit request'),
+                                child: const Text('Enviar solicitud'),
                               ),
                             ],
                           ),
                         ),
                         icon: const Icon(Icons.assignment_outlined),
-                        label: const Text('Request skip justification'),
+                        label: const Text('Solicitar justificación de omisión'),
                       ),
                     ),
                   ],
@@ -313,7 +333,7 @@ class _RouteHeader extends StatelessWidget {
         ],
       ),
       child: Text(
-        'Route ID: $routeId',
+        'ID de ruta: $routeId',
         textAlign: TextAlign.center,
         style: Theme.of(context).textTheme.titleMedium?.copyWith(
           fontWeight: FontWeight.w800,

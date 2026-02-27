@@ -53,7 +53,7 @@ class _RegistrationStepperScreenState extends State<RegistrationStepperScreen> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Sign up',
+                    'Regístrate',
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                       color: const Color(0xFF0A84FF),
@@ -67,40 +67,44 @@ class _RegistrationStepperScreenState extends State<RegistrationStepperScreen> {
                       children: [
                         TextFormField(
                           controller: _name,
-                          decoration: const InputDecoration(labelText: 'Name'),
+                          decoration: const InputDecoration(
+                            labelText: 'Nombre',
+                          ),
                           validator: (v) => (v == null || v.trim().isEmpty)
-                              ? 'Required'
+                              ? 'Requerido'
                               : null,
                         ),
                         const SizedBox(height: 12),
                         TextFormField(
                           controller: _email,
-                          decoration: const InputDecoration(labelText: 'Email'),
+                          decoration: const InputDecoration(
+                            labelText: 'Correo electrónico',
+                          ),
                           keyboardType: TextInputType.emailAddress,
                           validator: (v) => (v == null || !v.contains('@'))
-                              ? 'Invalid email'
+                              ? 'Correo inválido'
                               : null,
                         ),
                         const SizedBox(height: 12),
                         TextFormField(
                           controller: _password,
                           decoration: const InputDecoration(
-                            labelText: 'Password',
+                            labelText: 'Contraseña',
                           ),
                           obscureText: true,
                           validator: (v) => (v == null || v.length < 6)
-                              ? 'Minimum 6 chars'
+                              ? 'Mínimo 6 caracteres'
                               : null,
                         ),
                         const SizedBox(height: 12),
                         TextFormField(
                           controller: _phone,
                           decoration: const InputDecoration(
-                            labelText: 'Phone Number',
+                            labelText: 'Número de teléfono',
                           ),
                           keyboardType: TextInputType.phone,
                           validator: (v) => (v == null || v.trim().isEmpty)
-                              ? 'Required'
+                              ? 'Requerido'
                               : null,
                         ),
                         const SizedBox(height: 18),
@@ -111,7 +115,7 @@ class _RegistrationStepperScreenState extends State<RegistrationStepperScreen> {
                               if (!_formKey.currentState!.validate()) return;
                               context.go(AppRoutes.loginDetails);
                             },
-                            child: const Text('Continue'),
+                            child: const Text('Continuar'),
                           ),
                         ),
                       ],

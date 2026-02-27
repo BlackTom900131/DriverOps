@@ -12,12 +12,12 @@ class _DocumentUploadScreenState extends State<DocumentUploadScreen> {
   final uploaded = <String>{};
 
   static const docs = <(String, bool, String)>[
-    ('Government ID', true, 'Valid image/PDF, max size rule applies'),
-    ('Driver license', true, 'Front and back required'),
-    ('Vehicle registration', true, 'Must match declared vehicle'),
-    ('Insurance certificate', true, 'Must not be expired'),
-    ('Technical inspection', true, 'Expiration date tracked'),
-    ('Additional certification', false, 'Only when route type requires it'),
+    ('Identificación oficial', true, 'Imagen/PDF válido, aplica regla de tamaño máximo'),
+    ('Licencia de conducir', true, 'Se requieren frente y reverso'),
+    ('Registro del vehículo', true, 'Debe coincidir con el vehículo declarado'),
+    ('Certificado de seguro', true, 'No debe estar vencido'),
+    ('Inspección técnica', true, 'Se controla la fecha de vencimiento'),
+    ('Certificación adicional', false, 'Solo cuando el tipo de ruta lo requiere'),
   ];
 
   @override
@@ -26,7 +26,7 @@ class _DocumentUploadScreenState extends State<DocumentUploadScreen> {
     final allRequiredUploaded = requiredDocs.difference(uploaded).isEmpty;
 
     return AppScaffold(
-      title: 'Document Upload',
+      title: 'Carga de documentos',
       body: ListView(
         padding: const EdgeInsets.only(bottom: 20),
         children: [
@@ -34,11 +34,11 @@ class _DocumentUploadScreenState extends State<DocumentUploadScreen> {
           Card(
             child: ListTile(
               leading: const Icon(Icons.rule_outlined),
-              title: const Text('Compliance checklist'),
+              title: const Text('Lista de verificación de cumplimiento'),
               subtitle: Text(
                 '${
                     uploaded.length
-                } uploaded | ${requiredDocs.length} mandatory documents',
+                } cargados | ${requiredDocs.length} documentos obligatorios',
               ),
             ),
           ),
@@ -53,9 +53,9 @@ class _DocumentUploadScreenState extends State<DocumentUploadScreen> {
                   isUploaded ? Icons.check_circle_outline : Icons.description_outlined,
                   color: isUploaded ? const Color(0xFF2E7D32) : null,
                 ),
-                title: Text(mandatory ? '$name (Required)' : '$name (Optional)'),
+                title: Text(mandatory ? '$name (Requerido)' : '$name (Opcional)'),
                 subtitle: Text(
-                  isUploaded ? 'Uploaded. Awaiting verification.' : hint,
+                  isUploaded ? 'Cargado. En espera de verificación.' : hint,
                 ),
                 trailing: OutlinedButton(
                   onPressed: () {
@@ -67,7 +67,7 @@ class _DocumentUploadScreenState extends State<DocumentUploadScreen> {
                       }
                     });
                   },
-                  child: Text(isUploaded ? 'Replace' : 'Upload'),
+                  child: Text(isUploaded ? 'Reemplazar' : 'Cargar'),
                 ),
               ),
             );
@@ -79,10 +79,10 @@ class _DocumentUploadScreenState extends State<DocumentUploadScreen> {
                   ? null
                   : () => ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text('Submitted for verification (mock).'),
+                          content: Text('Enviado para verificación (simulado).'),
                         ),
                       ),
-              child: const Text('Submit documents'),
+              child: const Text('Enviar documentos'),
             ),
           ),
         ],

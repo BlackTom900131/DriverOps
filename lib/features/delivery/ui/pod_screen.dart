@@ -19,15 +19,15 @@ class _PodScreenState extends State<PodScreen> {
   Widget build(BuildContext context) {
     final canSubmit = photoAdded && signatureAdded;
     return AppScaffold(
-      title: 'Proof of Delivery',
+      title: 'Prueba de entrega',
       body: ListView(
         padding: const EdgeInsets.only(bottom: 20),
         children: [
           const SizedBox(height: 8),
           Card(
             child: ListTile(
-              title: const Text('POD Evidence'),
-              subtitle: Text('Route: ${widget.routeId} | Stop: ${widget.stopId}'),
+              title: const Text('Evidencia de POD'),
+              subtitle: Text('Ruta: ${widget.routeId} | Parada: ${widget.stopId}'),
             ),
           ),
           Card(
@@ -35,31 +35,33 @@ class _PodScreenState extends State<PodScreen> {
               children: [
                 ListTile(
                   leading: const Icon(Icons.photo_camera_outlined),
-                  title: const Text('Photo capture (mandatory)'),
+                  title: const Text('Captura de foto (obligatoria)'),
                   trailing: OutlinedButton(
                     onPressed: () => setState(() => photoAdded = true),
-                    child: Text(photoAdded ? 'Added' : 'Capture'),
+                    child: Text(photoAdded ? 'Agregado' : 'Capturar'),
                   ),
                 ),
                 const Divider(height: 1),
                 ListTile(
                   leading: const Icon(Icons.draw_outlined),
-                  title: const Text('Recipient signature (mandatory)'),
+                  title: const Text('Firma del destinatario (obligatoria)'),
                   trailing: OutlinedButton(
                     onPressed: () => setState(() => signatureAdded = true),
-                    child: Text(signatureAdded ? 'Added' : 'Sign'),
+                    child: Text(signatureAdded ? 'Agregado' : 'Firmar'),
                   ),
                 ),
                 const Divider(height: 1),
                 const Padding(
                   padding: EdgeInsets.all(16),
-                  child: TextField(decoration: InputDecoration(labelText: 'Recipient ID')),
+                  child: TextField(
+                    decoration: InputDecoration(labelText: 'ID del destinatario'),
+                  ),
                 ),
                 const Padding(
                   padding: EdgeInsets.fromLTRB(16, 0, 16, 16),
                   child: TextField(
                     maxLines: 3,
-                    decoration: InputDecoration(labelText: 'Notes (optional)'),
+                    decoration: InputDecoration(labelText: 'Notas (opcional)'),
                   ),
                 ),
               ],
@@ -71,9 +73,11 @@ class _PodScreenState extends State<PodScreen> {
               onPressed: !canSubmit
                   ? null
                   : () => ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Delivered with POD evidence.')),
+                        const SnackBar(
+                          content: Text('Entregado con evidencia POD.'),
+                        ),
                       ),
-              child: const Text('Submit POD'),
+              child: const Text('Enviar POD'),
             ),
           ),
         ],

@@ -8,23 +8,23 @@ class MessagesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
-      title: 'Server Messages',
+      title: 'Mensajes del servidor',
       body: ListView(
         padding: const EdgeInsets.only(top: 8, bottom: 16),
         children: const [
           Card(
             child: ListTile(
               leading: Icon(Icons.campaign_outlined),
-              title: Text('System notice'),
-              subtitle: Text('No new messages from server.'),
+              title: Text('Aviso del sistema'),
+              subtitle: Text('No hay mensajes nuevos del servidor.'),
               trailing: Icon(Icons.chevron_right),
             ),
           ),
           Card(
             child: ListTile(
               leading: Icon(Icons.verified_outlined),
-              title: Text('Verification update'),
-              subtitle: Text('Latest verification updates will appear here.'),
+              title: Text('Actualización de verificación'),
+              subtitle: Text('Las últimas actualizaciones de verificación aparecerán aquí.'),
               trailing: Icon(Icons.chevron_right),
             ),
           ),

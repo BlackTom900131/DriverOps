@@ -34,17 +34,17 @@ class _DocumentScreenState extends State<DocumentScreen> {
   static const List<_DocumentDefinition> _personalDocs = [
     _DocumentDefinition(
       id: 'government_id',
-      title: 'Government ID',
+      title: 'Identificación oficial',
       maxSizeMb: 8,
     ),
     _DocumentDefinition(
       id: 'drivers_license',
-      title: 'Valid driver\'s license',
+      title: 'Licencia de conducir válida',
       maxSizeMb: 8,
     ),
     _DocumentDefinition(
       id: 'additional_cert',
-      title: 'Additional certifications required by the company',
+      title: 'Certificaciones adicionales requeridas por la empresa',
       maxSizeMb: 8,
     ),
   ];
@@ -52,22 +52,22 @@ class _DocumentScreenState extends State<DocumentScreen> {
   static const List<_DocumentDefinition> _vehicleDocs = [
     _DocumentDefinition(
       id: 'vehicle_registration',
-      title: 'Vehicle registration certificate',
+      title: 'Certificado de registro del vehículo',
       maxSizeMb: 10,
     ),
     _DocumentDefinition(
       id: 'mandatory_insurance',
-      title: 'Mandatory insurance (valid)',
+      title: 'Seguro obligatorio (vigente)',
       maxSizeMb: 10,
     ),
     _DocumentDefinition(
       id: 'technical_inspection',
-      title: 'Technical inspection certificate (valid)',
+      title: 'Certificado de inspección técnica (vigente)',
       maxSizeMb: 10,
     ),
     _DocumentDefinition(
       id: 'additional_insurance',
-      title: 'Additional insurance if required',
+      title: 'Seguro adicional si es requerido',
       maxSizeMb: 10,
     ),
   ];
@@ -124,7 +124,7 @@ class _DocumentScreenState extends State<DocumentScreen> {
             children: [
               ListTile(
                 leading: const Icon(Icons.photo_library_outlined),
-                title: const Text('Image from Gallery'),
+                title: const Text('Imagen desde la galería'),
                 onTap: () async {
                   Navigator.of(context).pop();
                   await _pickFromGallery(doc);
@@ -132,7 +132,7 @@ class _DocumentScreenState extends State<DocumentScreen> {
               ),
               ListTile(
                 leading: const Icon(Icons.picture_as_pdf_outlined),
-                title: const Text('PDF Document'),
+                title: const Text('Documento PDF'),
                 onTap: () async {
                   Navigator.of(context).pop();
                   await _pickPdf(doc);
@@ -154,13 +154,13 @@ class _DocumentScreenState extends State<DocumentScreen> {
 
     final extension = _fileExtension(sourcePath);
     if (!_allowedExtensions.contains(extension)) {
-      _showInfo('Only image or PDF files are allowed.');
+      _showInfo('Solo se permiten archivos de imagen o PDF.');
       return;
     }
 
     final sourceFile = File(sourcePath);
     if (!await sourceFile.exists()) {
-      _showInfo('Selected file is not available.');
+      _showInfo('El archivo seleccionado no está disponible.');
       return;
     }
 
@@ -179,7 +179,9 @@ class _DocumentScreenState extends State<DocumentScreen> {
       final fileBytes = await fileToUpload.length();
       final maxBytes = doc.maxSizeMb * 1024 * 1024;
       if (fileBytes > maxBytes) {
-        _showInfo('File is too large. Max ${doc.maxSizeMb} MB allowed.');
+        _showInfo(
+          'El archivo es demasiado grande. Máximo ${doc.maxSizeMb} MB permitido.',
+        );
         return;
       }
 
@@ -187,7 +189,7 @@ class _DocumentScreenState extends State<DocumentScreen> {
         _statusById[doc.id] = current.copyWith(
           isUploading: true,
           uploadedToServer: false,
-          statusText: 'Uploading securely to cloud...',
+          statusText: 'Subiendo de forma segura a la nube...',
         );
       });
 
@@ -212,7 +214,7 @@ class _DocumentScreenState extends State<DocumentScreen> {
         _statusById[doc.id] = current.copyWith(
           isUploading: false,
           uploadedToServer: false,
-          statusText: 'Upload failed: $serverReason',
+          statusText: 'La subida falló: $serverReason',
         );
       });
     } finally {
@@ -246,22 +248,22 @@ class _DocumentScreenState extends State<DocumentScreen> {
   }) async {
     final endpoint = Uri.parse(_secureUploadEndpoint);
     if (endpoint.scheme.toLowerCase() != 'https') {
-      throw Exception('Upload endpoint must use HTTPS.');
+      throw Exception('El endpoint de subida debe usar HTTPS.');
     }
 
     // Replace this mock with your real secure API upload implementation.
     // The key constraint enforced here is HTTPS transport.
     await Future<void>.delayed(const Duration(seconds: 2));
     if (!await file.exists()) {
-      throw Exception('Upload source missing on device.');
+      throw Exception('Falta el origen de subida en el dispositivo.');
     }
     final _ = documentId + extension;
-    return 'Uploaded securely. Server reason: Document accepted.';
+    return 'Subido de forma segura. Motivo del servidor: documento aceptado.';
   }
 
   String _extractServerReason(Object error) {
     final text = error.toString().trim();
-    if (text.isEmpty) return 'Unknown server error.';
+    if (text.isEmpty) return 'Error de servidor desconocido.';
     if (text.startsWith('Exception: ')) {
       return text.substring('Exception: '.length);
     }
@@ -284,12 +286,12 @@ class _DocumentScreenState extends State<DocumentScreen> {
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
-      title: 'Mandatory Document Upload',
+      title: 'Carga obligatoria de documentos',
       body: ListView(
         padding: const EdgeInsets.only(top: 8, bottom: 20),
         children: [
           _DocumentSection(
-            title: 'Personal documents',
+            title: 'Documentos personales',
             icon: Icons.person_outline,
             docs: _personalDocs,
             statusById: _statusById,
@@ -297,7 +299,7 @@ class _DocumentScreenState extends State<DocumentScreen> {
             onGalleryOrPdf: _showGallerySourcePicker,
           ),
           _DocumentSection(
-            title: 'Vehicle documents',
+            title: 'Documentos del vehículo',
             icon: Icons.local_shipping_outlined,
             docs: _vehicleDocs,
             statusById: _statusById,
@@ -346,7 +348,7 @@ class _DocumentSection extends StatelessWidget {
             Align(
               alignment: Alignment.centerRight,
               child: Text(
-                'File size : max 10 MB',
+                'Tamaño de archivo: máx. 10 MB',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: const Color.fromARGB(255, 27, 136, 5),
                   fontWeight: FontWeight.w600,
@@ -402,7 +404,7 @@ class _DocumentSection extends StatelessWidget {
                                   ? null
                                   : () => onCamera(doc),
                               icon: const Icon(Icons.photo_camera_outlined),
-                              label: const Text('Camera'),
+                              label: const Text('Cámara'),
                             ),
                           ),
                           const SizedBox(width: 8),
@@ -412,7 +414,7 @@ class _DocumentSection extends StatelessWidget {
                                   ? null
                                   : () => onGalleryOrPdf(doc),
                               icon: const Icon(Icons.upload_file_outlined),
-                              label: const Text('Gallery/PDF'),
+                              label: const Text('Galería/PDF'),
                             ),
                           ),
                         ],
@@ -449,7 +451,7 @@ class _DocumentUploadStatus {
   const _DocumentUploadStatus({
     this.uploadedToServer = false,
     this.isUploading = false,
-    this.statusText = 'Not uploaded',
+    this.statusText = 'No subido',
   });
 
   _DocumentUploadStatus copyWith({

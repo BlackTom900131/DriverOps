@@ -34,12 +34,12 @@ class AppBottomBar extends StatelessWidget {
         NavigationDestination(
           icon: Icon(Icons.home_outlined),
           selectedIcon: Icon(Icons.home),
-          label: 'Home',
+          label: 'Inicio',
         ),
         NavigationDestination(
           icon: Icon(Icons.alt_route_outlined),
           selectedIcon: Icon(Icons.alt_route),
-          label: 'Router',
+          label: 'Rutas',
         ),
         NavigationDestination(
           icon: Icon(Icons.qr_code_scanner_outlined),
@@ -49,12 +49,12 @@ class AppBottomBar extends StatelessWidget {
         NavigationDestination(
           icon: Icon(Icons.support_agent_outlined),
           selectedIcon: Icon(Icons.support_agent),
-          label: 'Contact Us',
+          label: 'Contacto',
         ),
         NavigationDestination(
           icon: Icon(Icons.person_outline),
           selectedIcon: Icon(Icons.person),
-          label: 'Profile',
+          label: 'Perfil',
         ),
       ],
     );

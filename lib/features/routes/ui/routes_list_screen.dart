@@ -20,25 +20,28 @@ class RoutesListScreen extends ConsumerWidget {
 
   String _typeLabel(RouteType type) {
     return switch (type) {
-      RouteType.pickup => 'Pickup',
-      RouteType.delivery => 'Delivery',
-      RouteType.mixed => 'Mixed',
+      RouteType.pickup => 'Recogida',
+      RouteType.delivery => 'Entrega',
+      RouteType.mixed => 'Mixta',
     };
   }
 
   String _stopTypeLabel(StopType type) {
     return switch (type) {
-      StopType.pickup => 'Pickup',
-      StopType.delivery => 'Delivery',
-      StopType.mixed => 'Mixed',
+      StopType.pickup => 'Recogida',
+      StopType.delivery => 'Entrega',
+      StopType.mixed => 'Mixta',
     };
   }
 
-  String _stopStatusLabel(StopStatus status) {
+  String _stopStatusLabel(StopStatus status, StopType type) {
+    if (status == StopStatus.done && type == StopType.pickup) {
+      return 'Recogido';
+    }
     return switch (status) {
-      StopStatus.pending => 'Pending',
-      StopStatus.inProgress => 'In Progress',
-      StopStatus.done => 'Done',
+      StopStatus.pending => 'Pendiente',
+      StopStatus.inProgress => 'En progreso',
+      StopStatus.done => 'Completado',
     };
   }
 
@@ -88,11 +91,15 @@ class RoutesListScreen extends ConsumerWidget {
       );
       if (opened == true) return;
       messenger.showSnackBar(
-        const SnackBar(content: Text('Unable to open Google Maps web.')),
+        const SnackBar(
+          content: Text('No se puede abrir Google Maps en la web.'),
+        ),
       );
     } on PlatformException {
       messenger.showSnackBar(
-        const SnackBar(content: Text('Unable to open Google Maps web.')),
+        const SnackBar(
+          content: Text('No se puede abrir Google Maps en la web.'),
+        ),
       );
     }
   }
@@ -108,7 +115,7 @@ class RoutesListScreen extends ConsumerWidget {
         : routes.where((r) => r.id == selectedRouteId).firstOrNull;
 
     return AppScaffold(
-      title: 'Assigned Routes',
+      title: 'Rutas asignadas',
       body: ListView(
         padding: const EdgeInsets.only(bottom: 20),
         children: [
@@ -120,7 +127,7 @@ class RoutesListScreen extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Router Selectable List',
+                    'Lista seleccionable de rutas',
                     style: theme.textTheme.titleSmall?.copyWith(
                       fontWeight: FontWeight.w700,
                     ),
@@ -129,7 +136,7 @@ class RoutesListScreen extends ConsumerWidget {
                   DropdownButtonFormField<String>(
                     initialValue: selectedRouteId,
                     decoration: const InputDecoration(
-                      labelText: 'RouterID',
+                      labelText: 'ID de ruta',
                       border: OutlineInputBorder(),
                     ),
                     items: routes
@@ -153,7 +160,7 @@ class RoutesListScreen extends ConsumerWidget {
                   if (selectedRoute != null) ...[
                     const SizedBox(height: 12),
                     Text(
-                      'Stop List',
+                      'Lista de paradas',
                       style: theme.textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.w700,
                       ),
@@ -167,7 +174,10 @@ class RoutesListScreen extends ConsumerWidget {
                       itemBuilder: (context, index) {
                         final stop = selectedRoute.stops[index];
                         final stopType = _stopTypeLabel(stop.type);
-                        final stopStatus = _stopStatusLabel(stop.status);
+                        final stopStatus = _stopStatusLabel(
+                          stop.status,
+                          stop.type,
+                        );
                         return ListTile(
                           contentPadding: const EdgeInsets.fromLTRB(
                             12,
@@ -246,7 +256,7 @@ class RoutesListScreen extends ConsumerWidget {
                           ? null
                           : () => _openGoogleMapsWeb(context, selectedRoute),
                       icon: const Icon(Icons.map_outlined),
-                      label: const Text('View on Map'),
+                      label: const Text('Ver en el mapa'),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: _bluePrimary,
                         side: const BorderSide(color: _bluePrimary),
@@ -297,24 +307,14 @@ class _RouteSummaryStrip extends StatelessWidget {
       child: Row(
         children: [
           Expanded(
-            child: _SummaryItem(
-              title: 'Route type',
-              value: routeType,
-            ),
+            child: _SummaryItem(title: 'Tipo de ruta', value: routeType),
           ),
           const _SummaryDivider(),
           Expanded(
-            child: _SummaryItem(
-              title: 'Total stops',
-              value: totalStops,
-            ),
+            child: _SummaryItem(title: 'Paradas totales', value: totalStops),
           ),
           const _SummaryDivider(),
-          Expanded(
-            child: _StatusSummaryItem(
-              status: routeStatus,
-            ),
-          ),
+          Expanded(child: _StatusSummaryItem(status: routeStatus)),
         ],
       ),
     );
@@ -386,10 +386,7 @@ class _SummaryItem extends StatelessWidget {
   final String title;
   final String value;
 
-  const _SummaryItem({
-    required this.title,
-    required this.value,
-  });
+  const _SummaryItem({required this.title, required this.value});
 
   @override
   Widget build(BuildContext context) {
@@ -400,26 +397,26 @@ class _SummaryItem extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Text(
-          title.toUpperCase(),
-          textAlign: TextAlign.center,
-          style: theme.textTheme.labelSmall?.copyWith(
-            color: colors.onSurface.withValues(alpha: 0.62),
-            fontWeight: FontWeight.w600,
-            letterSpacing: 0.7,
+        children: [
+          Text(
+            title.toUpperCase(),
+            textAlign: TextAlign.center,
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: colors.onSurface.withValues(alpha: 0.62),
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.7,
+            ),
           ),
-        ),
-        Text(
-          value,
-          textAlign: TextAlign.center,
-          style: theme.textTheme.bodyMedium?.copyWith(
-            fontWeight: FontWeight.w900,
-            color: colors.onSurface,
-            letterSpacing: 0.1,
+          Text(
+            value,
+            textAlign: TextAlign.center,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.w900,
+              color: colors.onSurface,
+              letterSpacing: 0.1,
+            ),
           ),
-        ),
-      ],
+        ],
       ),
     );
   }
@@ -438,19 +435,19 @@ class _StatusSummaryItem extends StatelessWidget {
         const Color(0xFFFFF4DE),
         const Color(0xFF8A4B00),
         const Color(0xFFFFD08A),
-        'Pending',
+        'Pendiente',
       ),
       RouteStatus.inProgress => (
         const Color(0xFFE3F2FD),
         const Color(0xFF0D47A1),
         const Color(0xFF90CAF9),
-        'In Progress',
+        'En progreso',
       ),
       RouteStatus.completed => (
         const Color(0xFFE7F7EC),
         const Color(0xFF1B5E20),
         const Color(0xFFA5D6A7),
-        'Completed',
+        'Completado',
       ),
     };
 
@@ -459,34 +456,34 @@ class _StatusSummaryItem extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Text(
-          'ROUTE STATUS',
-          textAlign: TextAlign.center,
-          style: theme.textTheme.labelSmall?.copyWith(
-            color: const Color(0xFF4B5D75),
-            fontWeight: FontWeight.w600,
-            letterSpacing: 0.7,
-          ),
-        ),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-          decoration: BoxDecoration(
-            color: background,
-            borderRadius: BorderRadius.circular(999),
-            border: Border.all(color: border),
-          ),
-          child: Text(
-            label,
+        children: [
+          Text(
+            'ESTADO DE RUTA',
             textAlign: TextAlign.center,
-            style: theme.textTheme.labelMedium?.copyWith(
-              fontWeight: FontWeight.w800,
-              color: foreground,
-              letterSpacing: 0.2,
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: const Color(0xFF4B5D75),
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.7,
             ),
           ),
-        ),
-      ],
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            decoration: BoxDecoration(
+              color: background,
+              borderRadius: BorderRadius.circular(999),
+              border: Border.all(color: border),
+            ),
+            child: Text(
+              label,
+              textAlign: TextAlign.center,
+              style: theme.textTheme.labelMedium?.copyWith(
+                fontWeight: FontWeight.w800,
+                color: foreground,
+                letterSpacing: 0.2,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

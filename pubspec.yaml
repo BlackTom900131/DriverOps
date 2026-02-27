@@ -44,6 +44,7 @@ dependencies:
   flutter_image_compress: ^2.3.0
   video_player: ^2.9.5
   google_maps_flutter: ^2.12.3
+  mobile_scanner: ^5.2.3
 
 dev_dependencies:
   flutter_test:

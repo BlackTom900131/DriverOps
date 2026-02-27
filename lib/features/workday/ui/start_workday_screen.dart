@@ -21,7 +21,7 @@ class _StartWorkdayScreenState extends ConsumerState<StartWorkdayScreen> {
   Widget build(BuildContext context) {
     final offline = ref.watch(offlineQueueProvider).isOffline;
     return AppScaffold(
-      title: 'Start Workday',
+      title: 'Iniciar jornada',
       body: ListView(
         padding: const EdgeInsets.only(bottom: 20),
         children: [
@@ -33,26 +33,28 @@ class _StartWorkdayScreenState extends ConsumerState<StartWorkdayScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
-                    'Before starting',
+                    'Antes de comenzar',
                     style: TextStyle(fontWeight: FontWeight.w700),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     offline
-                        ? 'Offline mode active: start event will be queued.'
-                        : 'Online mode: start event will be sent immediately.',
+                        ? 'Modo sin conexión activo: el evento de inicio se pondrá en cola.'
+                        : 'Modo en línea: el evento de inicio se enviará de inmediato.',
                   ),
                   const SizedBox(height: 12),
                   CheckboxListTile(
                     value: confirm,
                     onChanged: (v) => setState(() => confirm = v ?? false),
-                    title: const Text('I confirm I am starting my workday now'),
+                    title: const Text(
+                      'Confirmo que estoy iniciando mi jornada ahora',
+                    ),
                     controlAffinity: ListTileControlAffinity.leading,
                   ),
                   SwitchListTile(
                     value: gpsValidation,
                     onChanged: (v) => setState(() => gpsValidation = v),
-                    title: const Text('GPS validation enabled'),
+                    title: const Text('Validación de GPS habilitada'),
                   ),
                   const SizedBox(height: 12),
                   SizedBox(
@@ -65,7 +67,7 @@ class _StartWorkdayScreenState extends ConsumerState<StartWorkdayScreen> {
                               ref.read(offlineQueueProvider.notifier).addMockEvent();
                               context.go(AppRoutes.home);
                             },
-                      child: const Text('Start Workday'),
+                      child: const Text('Iniciar jornada'),
                     ),
                   ),
                 ],

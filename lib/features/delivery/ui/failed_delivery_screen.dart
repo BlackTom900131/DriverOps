@@ -16,7 +16,7 @@ class FailedDeliveryScreen extends StatefulWidget {
 }
 
 class _FailedDeliveryScreenState extends State<FailedDeliveryScreen> {
-  String reason = 'Customer not available';
+  String reason = 'Cliente no disponible';
   final noteController = TextEditingController();
   bool evidenceAdded = false;
 
@@ -28,11 +28,11 @@ class _FailedDeliveryScreenState extends State<FailedDeliveryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final needsNote = reason == 'Other (requires note)';
+    final needsNote = reason == 'Otro (requiere nota)';
     final canSubmit = !needsNote || noteController.text.trim().isNotEmpty;
 
     return AppScaffold(
-      title: 'Failed Delivery',
+      title: 'Entrega fallida',
       body: ListView(
         padding: const EdgeInsets.only(bottom: 20),
         children: [
@@ -43,18 +43,18 @@ class _FailedDeliveryScreenState extends State<FailedDeliveryScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Route: ${widget.routeId} | Stop: ${widget.stopId}'),
+                  Text('Ruta: ${widget.routeId} | Parada: ${widget.stopId}'),
                   const SizedBox(height: 12),
                   DropdownButtonFormField<String>(
                     initialValue: reason,
                     items: const [
-                      'Customer not available',
-                      'Incorrect address',
-                      'Refused by customer',
-                      'Other (requires note)',
+                      'Cliente no disponible',
+                      'Dirección incorrecta',
+                      'Rechazado por el cliente',
+                      'Otro (requiere nota)',
                     ].map((s) => DropdownMenuItem(value: s, child: Text(s))).toList(),
                     onChanged: (v) => setState(() => reason = v ?? reason),
-                    decoration: const InputDecoration(labelText: 'Reason'),
+                    decoration: const InputDecoration(labelText: 'Motivo'),
                   ),
                   const SizedBox(height: 12),
                   TextField(
@@ -62,7 +62,8 @@ class _FailedDeliveryScreenState extends State<FailedDeliveryScreen> {
                     onChanged: (_) => setState(() {}),
                     maxLines: 3,
                     decoration: InputDecoration(
-                      labelText: needsNote ? 'Note (required)' : 'Note (optional)',
+                      labelText:
+                          needsNote ? 'Nota (requerida)' : 'Nota (opcional)',
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -71,11 +72,12 @@ class _FailedDeliveryScreenState extends State<FailedDeliveryScreen> {
                       OutlinedButton.icon(
                         onPressed: () => setState(() => evidenceAdded = true),
                         icon: const Icon(Icons.photo_camera_outlined),
-                        label: Text(evidenceAdded ? 'Evidence added' : 'Add photo'),
+                        label:
+                            Text(evidenceAdded ? 'Evidencia agregada' : 'Agregar foto'),
                       ),
                       const SizedBox(width: 10),
                       Text(
-                        'Evidence policy configurable',
+                        'Política de evidencia configurable',
                         style: TextStyle(color: Colors.grey.shade700),
                       ),
                     ],
@@ -88,10 +90,12 @@ class _FailedDeliveryScreenState extends State<FailedDeliveryScreen> {
                           ? null
                           : () => ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
-                                  content: Text('Failure submitted. Incident created via API.'),
+                                  content: Text(
+                                    'Fallo enviado. Incidente creado vía API.',
+                                  ),
                                 ),
                               ),
-                      child: const Text('Submit failure'),
+                      child: const Text('Enviar fallo'),
                     ),
                   ),
                 ],

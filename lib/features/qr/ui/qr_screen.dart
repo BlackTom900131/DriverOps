@@ -16,11 +16,11 @@ class QrScreen extends StatelessWidget {
             Icon(Icons.qr_code_scanner, size: 72),
             SizedBox(height: 12),
             Text(
-              'QR tools',
+              'Herramientas QR',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
             ),
             SizedBox(height: 6),
-            Text('Use this page for quick QR scan actions.'),
+            Text('Use esta página para acciones rápidas de escaneo QR.'),
           ],
         ),
       ),

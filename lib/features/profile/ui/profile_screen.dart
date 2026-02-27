@@ -31,7 +31,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   String _savedDob = '1995-03-20';
   String _savedPhone = '+1 555 010 2244';
   String _savedEmail = 'driver@company.com';
-  String _savedAddress = '221B Baker Street, Springfield, USA';
+  String _savedAddress = '221B Baker Street, Springfield, EE. UU.';
 
   @override
   void initState() {
@@ -78,7 +78,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
-      title: 'Personal information',
+      title: 'Información personal',
       body: ListView(
         padding: const EdgeInsets.only(bottom: 20),
         children: [
@@ -110,7 +110,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       onPressed: _capturing ? null : _captureSelfie,
                       icon: const Icon(Icons.camera_alt_outlined),
                       label: Text(
-                        _capturing ? 'Capturing...' : 'Capture Selfie',
+                        _capturing ? 'Capturando...' : 'Tomar selfie',
                       ),
                     ),
                   ),
@@ -128,17 +128,19 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     TextFormField(
                       controller: _fullNameCtrl,
                       decoration: const InputDecoration(
-                        labelText: 'Full name',
+                        labelText: 'Nombre completo',
                         prefixIcon: Icon(Icons.badge_outlined),
                       ),
                       validator: (v) =>
-                          (v == null || v.trim().isEmpty) ? 'Required' : null,
+                          (v == null || v.trim().isEmpty)
+                              ? 'Requerido'
+                              : null,
                     ),
                     const SizedBox(height: 12),
                     TextFormField(
                       controller: _governmentIdCtrl,
                       decoration: const InputDecoration(
-                        labelText: 'Government ID number',
+                        labelText: 'Número de identificación oficial',
                         prefixIcon: Icon(Icons.credit_card_outlined),
                       ),
                     ),
@@ -146,8 +148,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     TextFormField(
                       controller: _dobCtrl,
                       decoration: const InputDecoration(
-                        labelText: 'Date of birth',
-                        hintText: 'YYYY-MM-DD',
+                        labelText: 'Fecha de nacimiento',
+                        hintText: 'AAAA-MM-DD',
                         prefixIcon: Icon(Icons.cake_outlined),
                       ),
                     ),
@@ -156,7 +158,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       controller: _phoneCtrl,
                       keyboardType: TextInputType.phone,
                       decoration: const InputDecoration(
-                        labelText: 'Phone number',
+                        labelText: 'Número de teléfono',
                         prefixIcon: Icon(Icons.phone_outlined),
                       ),
                     ),
@@ -165,11 +167,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       controller: _emailCtrl,
                       keyboardType: TextInputType.emailAddress,
                       decoration: const InputDecoration(
-                        labelText: 'Email address',
+                        labelText: 'Correo electrónico',
                         prefixIcon: Icon(Icons.email_outlined),
                       ),
                       validator: (v) => (v == null || !v.contains('@'))
-                          ? 'Invalid email'
+                          ? 'Correo inválido'
                           : null,
                     ),
                     const SizedBox(height: 12),
@@ -177,7 +179,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       controller: _addressCtrl,
                       maxLines: 2,
                       decoration: const InputDecoration(
-                        labelText: 'Residential address',
+                        labelText: 'Dirección residencial',
                         prefixIcon: Icon(Icons.home_outlined),
                       ),
                     ),
@@ -191,14 +193,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               children: const [
                 ListTile(
                   leading: Icon(Icons.fingerprint),
-                  title: Text('Biometric login'),
-                  subtitle: Text('Enabled (mock)'),
+                  title: Text('Inicio de sesión biométrico'),
+                  subtitle: Text('Habilitado (simulado)'),
                 ),
                 Divider(height: 1),
                 ListTile(
                   leading: Icon(Icons.lock_clock_outlined),
-                  title: Text('Session policy'),
-                  subtitle: Text('Auto logout after inactivity (mock)'),
+                  title: Text('Política de sesión'),
+                  subtitle: Text('Cierre automático tras inactividad (simulado)'),
                 ),
               ],
             ),
@@ -218,7 +220,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       _emailCtrl.text = _savedEmail;
                       _addressCtrl.text = _savedAddress;
                     },
-                    child: const Text('Cancel'),
+                    child: const Text('Cancelar'),
                   ),
                 ),
                 const SizedBox(width: 10),
@@ -236,10 +238,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           .read(authStateProvider.notifier)
                           .updateDriverName(_savedFullName);
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Profile saved')),
+                        const SnackBar(content: Text('Perfil guardado')),
                       );
                     },
-                    child: const Text('Save Profile'),
+                    child: const Text('Guardar perfil'),
                   ),
                 ),
               ],

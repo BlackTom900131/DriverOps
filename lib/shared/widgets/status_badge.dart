@@ -10,12 +10,12 @@ class StatusBadge extends StatelessWidget {
     final theme = Theme.of(context);
     final primary = theme.colorScheme.primary;
     final (label, color) = switch (status) {
-      DriverStatus.none => ('No status', Colors.grey),
-      DriverStatus.pending => ('Pending', Colors.orange),
-      DriverStatus.underVerification => ('Under verification', Colors.blue),
-      DriverStatus.approved => ('Approved', Colors.green),
-      DriverStatus.rejected => ('Rejected', Colors.red),
-      DriverStatus.suspended => ('Suspended', Colors.redAccent),
+      DriverStatus.none => ('Sin estado', Colors.grey),
+      DriverStatus.pending => ('Pendiente', Colors.orange),
+      DriverStatus.underVerification => ('En verificación', Colors.blue),
+      DriverStatus.approved => ('Aprobado', Colors.green),
+      DriverStatus.rejected => ('Rechazado', Colors.red),
+      DriverStatus.suspended => ('Suspendido', Colors.redAccent),
     };
 
     return Container(

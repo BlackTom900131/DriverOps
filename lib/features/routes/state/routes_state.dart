@@ -31,6 +31,7 @@ class RoutesNotifier extends StateNotifier<RoutesState> {
                   customerName: 'Salesforce Tower',
                   customerContact: '+1 415-555-0101',
                   address: '415 Mission St, San Francisco, CA 94105',
+                  expectedPackages: 14,
                   type: StopType.pickup,
                   status: StopStatus.pending,
                   latitude: 37.7897,
@@ -41,6 +42,7 @@ class RoutesNotifier extends StateNotifier<RoutesState> {
                   customerName: 'Oracle Park',
                   customerContact: '+1 415-555-0102',
                   address: '24 Willie Mays Plaza, San Francisco, CA 94107',
+                  expectedPackages: 9,
                   type: StopType.delivery,
                   status: StopStatus.pending,
                   latitude: 37.7786,
@@ -51,6 +53,7 @@ class RoutesNotifier extends StateNotifier<RoutesState> {
                   customerName: 'Ferry Building',
                   customerContact: '+1 415-555-0103',
                   address: '1 Ferry Building, San Francisco, CA 94111',
+                  expectedPackages: 6,
                   type: StopType.mixed,
                   status: StopStatus.pending,
                   latitude: 37.7955,
@@ -69,6 +72,7 @@ class RoutesNotifier extends StateNotifier<RoutesState> {
                   customerContact: '+1 415-555-0110',
                   address:
                       'Beach St & The Embarcadero, San Francisco, CA 94133',
+                  expectedPackages: 11,
                   type: StopType.delivery,
                   status: StopStatus.inProgress,
                   latitude: 37.8087,
@@ -79,6 +83,7 @@ class RoutesNotifier extends StateNotifier<RoutesState> {
                   customerName: 'Lombard Street',
                   customerContact: '+1 415-555-0111',
                   address: '1000 Lombard St, San Francisco, CA 94109',
+                  expectedPackages: 5,
                   type: StopType.delivery,
                   status: StopStatus.pending,
                   latitude: 37.8021,
@@ -101,6 +106,12 @@ class RoutesNotifier extends StateNotifier<RoutesState> {
   DriverRoute? byId(String id) =>
       state.routes.where((r) => r.id == id).firstOrNull;
 
+  RouteStop? stopById(String routeId, String stopId) {
+    final route = byId(routeId);
+    if (route == null) return null;
+    return route.stops.where((s) => s.id == stopId).firstOrNull;
+  }
+
   bool canOpenStop(String routeId, String stopId) {
     final route = byId(routeId);
     if (route == null) return false;
@@ -111,15 +122,72 @@ class RoutesNotifier extends StateNotifier<RoutesState> {
 
   String? firstBlockedStopReason(String routeId, String stopId) {
     final route = byId(routeId);
-    if (route == null) return 'Route not found.';
+    if (route == null) return 'Ruta no encontrada.';
     final index = route.stops.indexWhere((s) => s.id == stopId);
-    if (index == -1) return 'Stop not found.';
+    if (index == -1) return 'Parada no encontrada.';
     for (var i = 0; i < index; i++) {
       if (route.stops[i].status != StopStatus.done) {
-        return 'Complete stop ${route.stops[i].id} first to preserve ordered execution.';
+        return 'Complete primero la parada ${route.stops[i].id} para preservar el orden.';
       }
     }
     return null;
+  }
+
+  void markStopArrived(String routeId, String stopId) {
+    _updateStopStatus(
+      routeId: routeId,
+      stopId: stopId,
+      nextStatus: StopStatus.inProgress,
+      updateWhen: (status) => status == StopStatus.pending,
+    );
+  }
+
+  void markPickupCompleted(String routeId, String stopId) {
+    _updateStopStatus(
+      routeId: routeId,
+      stopId: stopId,
+      nextStatus: StopStatus.done,
+      updateWhen: (status) => status != StopStatus.done,
+    );
+  }
+
+  void _updateStopStatus({
+    required String routeId,
+    required String stopId,
+    required StopStatus nextStatus,
+    required bool Function(StopStatus status) updateWhen,
+  }) {
+    final routes = state.routes;
+    final routeIndex = routes.indexWhere((r) => r.id == routeId);
+    if (routeIndex == -1) return;
+
+    final route = routes[routeIndex];
+    final stopIndex = route.stops.indexWhere((s) => s.id == stopId);
+    if (stopIndex == -1) return;
+
+    final stop = route.stops[stopIndex];
+    if (!updateWhen(stop.status)) return;
+
+    final updatedStops = List<RouteStop>.from(route.stops);
+    updatedStops[stopIndex] = stop.copyWith(status: nextStatus);
+
+    final updatedRoute = route.copyWith(
+      stops: updatedStops,
+      status: _computeRouteStatus(updatedStops),
+    );
+    final updatedRoutes = List<DriverRoute>.from(routes);
+    updatedRoutes[routeIndex] = updatedRoute;
+    state = state.copyWith(routes: updatedRoutes);
+  }
+
+  RouteStatus _computeRouteStatus(List<RouteStop> stops) {
+    if (stops.isNotEmpty && stops.every((s) => s.status == StopStatus.done)) {
+      return RouteStatus.completed;
+    }
+    if (stops.any((s) => s.status != StopStatus.pending)) {
+      return RouteStatus.inProgress;
+    }
+    return RouteStatus.pending;
   }
 }
 
