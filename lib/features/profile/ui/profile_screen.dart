@@ -1,5 +1,6 @@
-import 'dart:io';
+﻿import 'dart:io';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
@@ -31,7 +32,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   String _savedDob = '1995-03-20';
   String _savedPhone = '+1 555 010 2244';
   String _savedEmail = 'driver@company.com';
-  String _savedAddress = '221B Baker Street, Springfield, EE. UU.';
+  String _savedAddress = '221B Baker Street, Springfield, USA';
 
   @override
   void initState() {
@@ -78,7 +79,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
-      title: 'Información personal',
+      title: tr('profile.title'),
       body: ListView(
         padding: const EdgeInsets.only(bottom: 20),
         children: [
@@ -110,7 +111,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       onPressed: _capturing ? null : _captureSelfie,
                       icon: const Icon(Icons.camera_alt_outlined),
                       label: Text(
-                        _capturing ? 'Capturando...' : 'Tomar selfie',
+                        _capturing
+                            ? tr('profile.capturing')
+                            : tr('profile.capture_selfie'),
                       ),
                     ),
                   ),
@@ -127,60 +130,58 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   children: [
                     TextFormField(
                       controller: _fullNameCtrl,
-                      decoration: const InputDecoration(
-                        labelText: 'Nombre completo',
-                        prefixIcon: Icon(Icons.badge_outlined),
+                      decoration: InputDecoration(
+                        labelText: tr('profile.full_name'),
+                        prefixIcon: const Icon(Icons.badge_outlined),
                       ),
                       validator: (v) =>
-                          (v == null || v.trim().isEmpty)
-                              ? 'Requerido'
-                              : null,
+                          (v == null || v.trim().isEmpty) ? tr('profile.required') : null,
                     ),
                     const SizedBox(height: 12),
                     TextFormField(
                       controller: _governmentIdCtrl,
-                      decoration: const InputDecoration(
-                        labelText: 'Número de identificación oficial',
-                        prefixIcon: Icon(Icons.credit_card_outlined),
+                      decoration: InputDecoration(
+                        labelText: tr('profile.government_id'),
+                        prefixIcon: const Icon(Icons.credit_card_outlined),
                       ),
                     ),
                     const SizedBox(height: 12),
                     TextFormField(
                       controller: _dobCtrl,
-                      decoration: const InputDecoration(
-                        labelText: 'Fecha de nacimiento',
-                        hintText: 'AAAA-MM-DD',
-                        prefixIcon: Icon(Icons.cake_outlined),
+                      decoration: InputDecoration(
+                        labelText: tr('profile.dob'),
+                        hintText: tr('profile.dob_hint'),
+                        prefixIcon: const Icon(Icons.cake_outlined),
                       ),
                     ),
                     const SizedBox(height: 12),
                     TextFormField(
                       controller: _phoneCtrl,
                       keyboardType: TextInputType.phone,
-                      decoration: const InputDecoration(
-                        labelText: 'Número de teléfono',
-                        prefixIcon: Icon(Icons.phone_outlined),
+                      decoration: InputDecoration(
+                        labelText: tr('profile.phone'),
+                        prefixIcon: const Icon(Icons.phone_outlined),
                       ),
                     ),
                     const SizedBox(height: 12),
                     TextFormField(
                       controller: _emailCtrl,
                       keyboardType: TextInputType.emailAddress,
-                      decoration: const InputDecoration(
-                        labelText: 'Correo electrónico',
-                        prefixIcon: Icon(Icons.email_outlined),
+                      decoration: InputDecoration(
+                        labelText: tr('profile.email'),
+                        prefixIcon: const Icon(Icons.email_outlined),
                       ),
                       validator: (v) => (v == null || !v.contains('@'))
-                          ? 'Correo inválido'
+                          ? tr('profile.email_invalid')
                           : null,
                     ),
                     const SizedBox(height: 12),
                     TextFormField(
                       controller: _addressCtrl,
                       maxLines: 2,
-                      decoration: const InputDecoration(
-                        labelText: 'Dirección residencial',
-                        prefixIcon: Icon(Icons.home_outlined),
+                      decoration: InputDecoration(
+                        labelText: tr('profile.address'),
+                        prefixIcon: const Icon(Icons.home_outlined),
                       ),
                     ),
                   ],
@@ -190,17 +191,17 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           ),
           Card(
             child: Column(
-              children: const [
+              children: [
                 ListTile(
-                  leading: Icon(Icons.fingerprint),
-                  title: Text('Inicio de sesión biométrico'),
-                  subtitle: Text('Habilitado (simulado)'),
+                  leading: const Icon(Icons.fingerprint),
+                  title: Text(tr('profile.biometric_login')),
+                  subtitle: Text(tr('profile.enabled_mock')),
                 ),
-                Divider(height: 1),
+                const Divider(height: 1),
                 ListTile(
-                  leading: Icon(Icons.lock_clock_outlined),
-                  title: Text('Política de sesión'),
-                  subtitle: Text('Cierre automático tras inactividad (simulado)'),
+                  leading: const Icon(Icons.lock_clock_outlined),
+                  title: Text(tr('profile.session_policy')),
+                  subtitle: Text(tr('profile.auto_logout_mock')),
                 ),
               ],
             ),
@@ -220,7 +221,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       _emailCtrl.text = _savedEmail;
                       _addressCtrl.text = _savedAddress;
                     },
-                    child: const Text('Cancelar'),
+                    child: Text(tr('profile.cancel')),
                   ),
                 ),
                 const SizedBox(width: 10),
@@ -234,14 +235,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       _savedPhone = _phoneCtrl.text.trim();
                       _savedEmail = _emailCtrl.text.trim();
                       _savedAddress = _addressCtrl.text.trim();
-                      ref
-                          .read(authStateProvider.notifier)
-                          .updateDriverName(_savedFullName);
+                      ref.read(authStateProvider.notifier).updateDriverName(_savedFullName);
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Perfil guardado')),
+                        SnackBar(content: Text(tr('profile.profile_saved'))),
                       );
                     },
-                    child: const Text('Guardar perfil'),
+                    child: Text(tr('profile.save_profile')),
                   ),
                 ),
               ],

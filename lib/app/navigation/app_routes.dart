@@ -16,6 +16,7 @@ class AppRoutes {
   static const homeDocuments = '/home/documents';
   static const homeSecurity = '/home/security';
   static const homeMessages = '/home/messages';
+  static const homeSettings = '/home/settings';
   static const homeQr = '/home/qr';
 
   static String routeDetails(String routeId) => '$homeRoutes/$routeId';

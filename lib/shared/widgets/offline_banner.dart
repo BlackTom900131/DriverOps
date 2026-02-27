@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../features/offline_queue/state/offline_queue_state.dart';
 
@@ -27,7 +28,7 @@ class OfflineBanner extends ConsumerWidget {
           const SizedBox(width: 10),
           Expanded(
             child: Text(
-              'Estás sin conexión.',
+              tr('offline.banner'),
               style: const TextStyle(
                 color: Color(0xFF723600),
                 fontWeight: FontWeight.w600,

@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:go_router/go_router.dart';
 import '../../../app/navigation/app_routes.dart';
 
@@ -53,7 +54,7 @@ class _RegistrationStepperScreenState extends State<RegistrationStepperScreen> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Regístrate',
+                    tr('registration.title'),
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                       color: const Color(0xFF0A84FF),
@@ -67,44 +68,44 @@ class _RegistrationStepperScreenState extends State<RegistrationStepperScreen> {
                       children: [
                         TextFormField(
                           controller: _name,
-                          decoration: const InputDecoration(
-                            labelText: 'Nombre',
+                          decoration: InputDecoration(
+                            labelText: tr('registration.name_label'),
                           ),
                           validator: (v) => (v == null || v.trim().isEmpty)
-                              ? 'Requerido'
+                              ? tr('registration.required')
                               : null,
                         ),
                         const SizedBox(height: 12),
                         TextFormField(
                           controller: _email,
-                          decoration: const InputDecoration(
-                            labelText: 'Correo electrónico',
+                          decoration: InputDecoration(
+                            labelText: tr('registration.email_label'),
                           ),
                           keyboardType: TextInputType.emailAddress,
                           validator: (v) => (v == null || !v.contains('@'))
-                              ? 'Correo inválido'
+                              ? tr('registration.email_invalid')
                               : null,
                         ),
                         const SizedBox(height: 12),
                         TextFormField(
                           controller: _password,
-                          decoration: const InputDecoration(
-                            labelText: 'Contraseña',
+                          decoration: InputDecoration(
+                            labelText: tr('registration.password_label'),
                           ),
                           obscureText: true,
                           validator: (v) => (v == null || v.length < 6)
-                              ? 'Mínimo 6 caracteres'
+                              ? tr('registration.password_short')
                               : null,
                         ),
                         const SizedBox(height: 12),
                         TextFormField(
                           controller: _phone,
-                          decoration: const InputDecoration(
-                            labelText: 'Número de teléfono',
+                          decoration: InputDecoration(
+                            labelText: tr('registration.phone_label'),
                           ),
                           keyboardType: TextInputType.phone,
                           validator: (v) => (v == null || v.trim().isEmpty)
-                              ? 'Requerido'
+                              ? tr('registration.required')
                               : null,
                         ),
                         const SizedBox(height: 18),
@@ -115,7 +116,7 @@ class _RegistrationStepperScreenState extends State<RegistrationStepperScreen> {
                               if (!_formKey.currentState!.validate()) return;
                               context.go(AppRoutes.loginDetails);
                             },
-                            child: const Text('Continuar'),
+                            child: Text(tr('common.continue')),
                           ),
                         ),
                       ],

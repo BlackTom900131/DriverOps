@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:go_router/go_router.dart';
 import 'package:video_player/video_player.dart';
 import '../../../app/navigation/app_routes.dart';
@@ -36,7 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
-      title: 'Operaciones del conductor',
+      title: tr('home.title'),
       showOfflineBanner: false,
       body: Stack(
         fit: StackFit.expand,
@@ -78,15 +79,12 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                         child: Text.rich(
-                          const TextSpan(
+                          TextSpan(
                             children: [
+                              TextSpan(text: tr('home.hero_prefix')),
                               TextSpan(
-                                text:
-                                    'Conduce con inteligencia. Entrega con seguridad. Gana más con ',
-                              ),
-                              TextSpan(
-                                text: 'Nuestra Empresa.',
-                                style: TextStyle(
+                                text: tr('home.hero_brand'),
+                                style: const TextStyle(
                                   color: Color(0xFF7EC8FF),
                                   fontWeight: FontWeight.w800,
                                 ),
@@ -115,7 +113,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       FilledButton.icon(
                         onPressed: () => context.go(AppRoutes.homeStartWorkday),
                         icon: const Icon(Icons.play_arrow_rounded, size: 24),
-                        label: const Text('Iniciar jornada'),
+                        label: Text(tr('home.start_workday')),
                       ),
                     ],
                   ),

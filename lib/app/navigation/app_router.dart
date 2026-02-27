@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -22,6 +23,7 @@ import '../../features/routes/ui/route_map_screen.dart';
 import '../../features/routes/ui/routes_list_screen.dart';
 import '../../features/routes/ui/stop_detail_screen.dart';
 import '../../features/security/ui/security_screen.dart';
+import '../../features/settings/ui/settings_screen.dart';
 import '../../features/status/ui/status_screen.dart';
 import '../../features/vehicle/ui/vehicle_screen.dart';
 import '../../features/workday/ui/home_screen.dart';
@@ -70,6 +72,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           location,
           AppRoutes.homeMessages,
         );
+        final onSettings = AppRoutes.isInSection(
+          location,
+          AppRoutes.homeSettings,
+        );
         if (!registering &&
             !onHome &&
             !onRoutes &&
@@ -79,7 +85,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             !onVehicle &&
             !onDocuments &&
             !onSecurity &&
-            !onMessages) {
+            !onMessages &&
+            !onSettings) {
           return AppRoutes.homeStatus;
         }
       }
@@ -169,12 +176,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(path: 'documents', builder: (_, _) => const DocumentScreen()),
           GoRoute(path: 'security', builder: (_, _) => const SecurityScreen()),
           GoRoute(path: 'messages', builder: (_, _) => const MessagesScreen()),
+          GoRoute(path: 'settings', builder: (_, _) => const SettingsScreen()),
           GoRoute(path: 'qr', builder: (_, _) => const QrScreen()),
         ],
       ),
     ],
     errorBuilder: (_, state) => Scaffold(
-      appBar: AppBar(title: const Text('Error')),
+      appBar: AppBar(title: Text(tr('common.error'))),
       body: Center(child: Text(state.error.toString())),
     ),
   );

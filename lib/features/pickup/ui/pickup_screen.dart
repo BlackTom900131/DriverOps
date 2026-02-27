@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../auth/state/auth_state.dart';
 import '../../../shared/extensions/iterable_extensions.dart';
 import '../../../shared/models/route_models.dart';
@@ -33,9 +34,7 @@ class _PickupScreenState extends ConsumerState<PickupScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref
-          .read(routesProvider.notifier)
-          .markStopArrived(widget.routeId, widget.stopId);
+      ref.read(routesProvider.notifier).markStopArrived(widget.routeId, widget.stopId);
     });
   }
 
@@ -67,10 +66,8 @@ class _PickupScreenState extends ConsumerState<PickupScreen> {
     final stop = routesNotifier.stopById(widget.routeId, widget.stopId);
     if (stop == null) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(
-        const SnackBar(content: Text('No se encontraron datos de la parada.')),
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(tr('pickup.stop_not_found'))),
       );
       return;
     }
@@ -114,9 +111,7 @@ class _PickupScreenState extends ConsumerState<PickupScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          queued
-              ? 'Escaneo guardado. Subida en cola para sincronizar.'
-              : 'Escaneo subido. Paquete marcado como Recogido.',
+          queued ? tr('pickup.scan_saved_queued') : tr('pickup.scan_uploaded_picked_up'),
         ),
       ),
     );
@@ -126,11 +121,7 @@ class _PickupScreenState extends ConsumerState<PickupScreen> {
     final code = _detectedCode;
     if (code == null || code.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'No se detectó código de barras/QR. Alinee el código e intente de nuevo.',
-          ),
-        ),
+        SnackBar(content: Text(tr('pickup.no_barcode_detected'))),
       );
       return;
     }
@@ -138,31 +129,31 @@ class _PickupScreenState extends ConsumerState<PickupScreen> {
   }
 
   String _stopStatusLabel(StopStatus? status) {
-    if (status == null) return 'desconocido';
+    if (status == null) return tr('pickup.status_unknown');
     switch (status) {
       case StopStatus.pending:
-        return 'Pendiente';
+        return tr('pickup.stop_status_pending');
       case StopStatus.inProgress:
-        return 'En progreso';
+        return tr('pickup.stop_status_in_progress');
       case StopStatus.done:
-        return 'Recogido';
+        return tr('pickup.stop_status_done');
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final routes = ref.watch(routesProvider);
-    final route = routes.routes
-        .where((r) => r.id == widget.routeId)
-        .firstOrNull;
+    final route = routes.routes.where((r) => r.id == widget.routeId).firstOrNull;
     final stop = route?.stops.where((s) => s.id == widget.stopId).firstOrNull;
     final queue = ref.watch(offlineQueueProvider);
     final done = (stop?.status == StopStatus.done) || _scannedCode != null;
-    final packageStatus = done ? 'Recogido' : 'Pendiente';
+    final packageStatus = done
+        ? tr('pickup.package_status_picked_up')
+        : tr('pickup.package_status_pending');
     final stopStatus = _stopStatusLabel(stop?.status);
 
     return AppScaffold(
-      title: 'Escaneo de recogida - ${widget.stopId}',
+      title: tr('pickup.title', namedArgs: {'stopId': widget.stopId}),
       showOfflineBanner: false,
       body: Stack(
         children: [
@@ -173,9 +164,9 @@ class _PickupScreenState extends ConsumerState<PickupScreen> {
               placeholderBuilder: (context, child) => Container(
                 color: Colors.black,
                 alignment: Alignment.center,
-                child: const Text(
-                  'Abriendo cámara...',
-                  style: TextStyle(color: Colors.white),
+                child: Text(
+                  tr('pickup.opening_camera'),
+                  style: const TextStyle(color: Colors.white),
                 ),
               ),
               errorBuilder: (context, error, child) {
@@ -197,13 +188,11 @@ class _PickupScreenState extends ConsumerState<PickupScreen> {
                       ),
                       const SizedBox(height: 10),
                       Text(
-                        error.errorCode ==
-                                MobileScannerErrorCode.permissionDenied
-                            ? 'Permiso de cámara denegado. Permita el acceso a la cámara.'
-                            : error.errorCode ==
-                                  MobileScannerErrorCode.unsupported
-                            ? 'El escáner de cámara no es compatible con este dispositivo/plataforma.'
-                            : 'No se puede iniciar el escáner de cámara.',
+                        error.errorCode == MobileScannerErrorCode.permissionDenied
+                            ? tr('pickup.camera_permission_denied')
+                            : error.errorCode == MobileScannerErrorCode.unsupported
+                                ? tr('pickup.camera_unsupported')
+                                : tr('pickup.camera_start_failed'),
                         textAlign: TextAlign.center,
                         style: const TextStyle(color: Colors.white),
                       ),
@@ -239,7 +228,13 @@ class _PickupScreenState extends ConsumerState<PickupScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Ruta ${widget.routeId}  |  Parada ${widget.stopId}',
+                    tr(
+                      'pickup.route_stop',
+                      namedArgs: {
+                        'routeId': widget.routeId,
+                        'stopId': widget.stopId,
+                      },
+                    ),
                     style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.w700,
@@ -248,7 +243,13 @@ class _PickupScreenState extends ConsumerState<PickupScreen> {
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    'Paquete: $packageStatus  |  Parada: $stopStatus',
+                    tr(
+                      'pickup.package_stop_status',
+                      namedArgs: {
+                        'packageStatus': packageStatus,
+                        'stopStatus': stopStatus,
+                      },
+                    ),
                     style: TextStyle(
                       color: done ? Colors.lightGreenAccent : Colors.white,
                       fontWeight: FontWeight.w700,
@@ -256,9 +257,7 @@ class _PickupScreenState extends ConsumerState<PickupScreen> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    queue.isOffline
-                        ? 'Sin conexión: el evento de recogida se pondrá en cola y se sincronizará automáticamente.'
-                        : 'En línea: el evento de recogida se sube automáticamente después de la captura.',
+                    queue.isOffline ? tr('pickup.offline_hint') : tr('pickup.online_hint'),
                     style: const TextStyle(color: Colors.white, fontSize: 12),
                   ),
                 ],
@@ -286,20 +285,20 @@ class _PickupScreenState extends ConsumerState<PickupScreen> {
                 children: [
                   Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 10,
-                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                     decoration: BoxDecoration(
                       color: Colors.black.withValues(alpha: 0.58),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
                       _cameraError != null
-                          ? 'Cámara no disponible. Corrija permisos/soporte del dispositivo y toque Reintentar.'
+                          ? tr('pickup.camera_unavailable_retry')
                           : _detectedCode == null
-                          ? 'Alinee el código de barras/QR dentro del marco'
-                          : 'Detectado: $_detectedCode',
+                              ? tr('pickup.align_barcode')
+                              : tr(
+                                  'pickup.detected_code',
+                                  namedArgs: {'code': _detectedCode!},
+                                ),
                       style: const TextStyle(color: Colors.white),
                     ),
                   ),
@@ -313,7 +312,7 @@ class _PickupScreenState extends ConsumerState<PickupScreen> {
                           foregroundColor: Colors.white,
                           side: const BorderSide(color: Colors.white),
                         ),
-                        child: const Text('Reintentar cámara'),
+                        child: Text(tr('pickup.retry_camera')),
                       ),
                     ),
                     const SizedBox(height: 10),
@@ -335,14 +334,9 @@ class _PickupScreenState extends ConsumerState<PickupScreen> {
                           ? const SizedBox(
                               width: 28,
                               height: 28,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2.4,
-                              ),
+                              child: CircularProgressIndicator(strokeWidth: 2.4),
                             )
-                          : Icon(
-                              done ? Icons.check : Icons.camera_alt_outlined,
-                              size: 34,
-                            ),
+                          : Icon(done ? Icons.check : Icons.camera_alt_outlined, size: 34),
                     ),
                   ),
                 ],

@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import '../../../shared/widgets/app_scaffold.dart';
 
@@ -8,24 +9,24 @@ class MessagesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
-      title: 'Mensajes del servidor',
+      title: tr('messages.title'),
       body: ListView(
         padding: const EdgeInsets.only(top: 8, bottom: 16),
-        children: const [
+        children: [
           Card(
             child: ListTile(
-              leading: Icon(Icons.campaign_outlined),
-              title: Text('Aviso del sistema'),
-              subtitle: Text('No hay mensajes nuevos del servidor.'),
-              trailing: Icon(Icons.chevron_right),
+              leading: const Icon(Icons.campaign_outlined),
+              title: Text(tr('messages.system_notice_title')),
+              subtitle: Text(tr('messages.system_notice_subtitle')),
+              trailing: const Icon(Icons.chevron_right),
             ),
           ),
           Card(
             child: ListTile(
-              leading: Icon(Icons.verified_outlined),
-              title: Text('Actualización de verificación'),
-              subtitle: Text('Las últimas actualizaciones de verificación aparecerán aquí.'),
-              trailing: Icon(Icons.chevron_right),
+              leading: const Icon(Icons.verified_outlined),
+              title: Text(tr('messages.verification_update_title')),
+              subtitle: Text(tr('messages.verification_update_subtitle')),
+              trailing: const Icon(Icons.chevron_right),
             ),
           ),
         ],

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -20,28 +21,28 @@ class RoutesListScreen extends ConsumerWidget {
 
   String _typeLabel(RouteType type) {
     return switch (type) {
-      RouteType.pickup => 'Recogida',
-      RouteType.delivery => 'Entrega',
-      RouteType.mixed => 'Mixta',
+      RouteType.pickup => tr('routes.route_type_pickup'),
+      RouteType.delivery => tr('routes.route_type_delivery'),
+      RouteType.mixed => tr('routes.route_type_mixed'),
     };
   }
 
   String _stopTypeLabel(StopType type) {
     return switch (type) {
-      StopType.pickup => 'Recogida',
-      StopType.delivery => 'Entrega',
-      StopType.mixed => 'Mixta',
+      StopType.pickup => tr('routes.stop_type_pickup'),
+      StopType.delivery => tr('routes.stop_type_delivery'),
+      StopType.mixed => tr('routes.stop_type_mixed'),
     };
   }
 
   String _stopStatusLabel(StopStatus status, StopType type) {
     if (status == StopStatus.done && type == StopType.pickup) {
-      return 'Recogido';
+      return tr('routes.stop_status_picked_up');
     }
     return switch (status) {
-      StopStatus.pending => 'Pendiente',
-      StopStatus.inProgress => 'En progreso',
-      StopStatus.done => 'Completado',
+      StopStatus.pending => tr('routes.stop_status_pending'),
+      StopStatus.inProgress => tr('routes.stop_status_in_progress'),
+      StopStatus.done => tr('routes.stop_status_completed'),
     };
   }
 
@@ -91,15 +92,11 @@ class RoutesListScreen extends ConsumerWidget {
       );
       if (opened == true) return;
       messenger.showSnackBar(
-        const SnackBar(
-          content: Text('No se puede abrir Google Maps en la web.'),
-        ),
+        SnackBar(content: Text(tr('routes.cannot_open_maps_web'))),
       );
     } on PlatformException {
       messenger.showSnackBar(
-        const SnackBar(
-          content: Text('No se puede abrir Google Maps en la web.'),
-        ),
+        SnackBar(content: Text(tr('routes.cannot_open_maps_web'))),
       );
     }
   }
@@ -115,7 +112,7 @@ class RoutesListScreen extends ConsumerWidget {
         : routes.where((r) => r.id == selectedRouteId).firstOrNull;
 
     return AppScaffold(
-      title: 'Rutas asignadas',
+      title: tr('routes.title'),
       body: ListView(
         padding: const EdgeInsets.only(bottom: 20),
         children: [
@@ -127,7 +124,7 @@ class RoutesListScreen extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Lista seleccionable de rutas',
+                    tr('routes.selectable_list'),
                     style: theme.textTheme.titleSmall?.copyWith(
                       fontWeight: FontWeight.w700,
                     ),
@@ -135,8 +132,8 @@ class RoutesListScreen extends ConsumerWidget {
                   const SizedBox(height: 12),
                   DropdownButtonFormField<String>(
                     initialValue: selectedRouteId,
-                    decoration: const InputDecoration(
-                      labelText: 'ID de ruta',
+                    decoration: InputDecoration(
+                      labelText: tr('routes.route_id'),
                       border: OutlineInputBorder(),
                     ),
                     items: routes
@@ -160,7 +157,7 @@ class RoutesListScreen extends ConsumerWidget {
                   if (selectedRoute != null) ...[
                     const SizedBox(height: 12),
                     Text(
-                      'Lista de paradas',
+                      tr('routes.stop_list'),
                       style: theme.textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.w700,
                       ),
@@ -256,7 +253,7 @@ class RoutesListScreen extends ConsumerWidget {
                           ? null
                           : () => _openGoogleMapsWeb(context, selectedRoute),
                       icon: const Icon(Icons.map_outlined),
-                      label: const Text('Ver en el mapa'),
+                      label: Text(tr('routes.view_on_map')),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: _bluePrimary,
                         side: const BorderSide(color: _bluePrimary),
@@ -307,11 +304,11 @@ class _RouteSummaryStrip extends StatelessWidget {
       child: Row(
         children: [
           Expanded(
-            child: _SummaryItem(title: 'Tipo de ruta', value: routeType),
+            child: _SummaryItem(title: tr('routes.summary_route_type'), value: routeType),
           ),
           const _SummaryDivider(),
           Expanded(
-            child: _SummaryItem(title: 'Paradas totales', value: totalStops),
+            child: _SummaryItem(title: tr('routes.summary_total_stops'), value: totalStops),
           ),
           const _SummaryDivider(),
           Expanded(child: _StatusSummaryItem(status: routeStatus)),
@@ -435,19 +432,19 @@ class _StatusSummaryItem extends StatelessWidget {
         const Color(0xFFFFF4DE),
         const Color(0xFF8A4B00),
         const Color(0xFFFFD08A),
-        'Pendiente',
+        tr('routes.route_status_pending'),
       ),
       RouteStatus.inProgress => (
         const Color(0xFFE3F2FD),
         const Color(0xFF0D47A1),
         const Color(0xFF90CAF9),
-        'En progreso',
+        tr('routes.route_status_in_progress'),
       ),
       RouteStatus.completed => (
         const Color(0xFFE7F7EC),
         const Color(0xFF1B5E20),
         const Color(0xFFA5D6A7),
-        'Completado',
+        tr('routes.route_status_completed'),
       ),
     };
 
@@ -458,7 +455,7 @@ class _StatusSummaryItem extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Text(
-            'ESTADO DE RUTA',
+            tr('routes.summary_route_status').toUpperCase(),
             textAlign: TextAlign.center,
             style: theme.textTheme.labelSmall?.copyWith(
               color: const Color(0xFF4B5D75),

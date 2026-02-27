@@ -122,12 +122,12 @@ class RoutesNotifier extends StateNotifier<RoutesState> {
 
   String? firstBlockedStopReason(String routeId, String stopId) {
     final route = byId(routeId);
-    if (route == null) return 'Ruta no encontrada.';
+    if (route == null) return 'route_not_found';
     final index = route.stops.indexWhere((s) => s.id == stopId);
-    if (index == -1) return 'Parada no encontrada.';
+    if (index == -1) return 'stop_not_found';
     for (var i = 0; i < index; i++) {
       if (route.stops[i].status != StopStatus.done) {
-        return 'Complete primero la parada ${route.stops[i].id} para preservar el orden.';
+        return 'complete_first:${route.stops[i].id}';
       }
     }
     return null;

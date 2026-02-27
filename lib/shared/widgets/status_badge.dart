@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../models/driver.dart';
 
 class StatusBadge extends StatelessWidget {
@@ -10,12 +11,12 @@ class StatusBadge extends StatelessWidget {
     final theme = Theme.of(context);
     final primary = theme.colorScheme.primary;
     final (label, color) = switch (status) {
-      DriverStatus.none => ('Sin estado', Colors.grey),
-      DriverStatus.pending => ('Pendiente', Colors.orange),
-      DriverStatus.underVerification => ('En verificación', Colors.blue),
-      DriverStatus.approved => ('Aprobado', Colors.green),
-      DriverStatus.rejected => ('Rechazado', Colors.red),
-      DriverStatus.suspended => ('Suspendido', Colors.redAccent),
+      DriverStatus.none => (tr('status.badge_none'), Colors.grey),
+      DriverStatus.pending => (tr('status.badge_pending'), Colors.orange),
+      DriverStatus.underVerification => (tr('status.badge_under_verification'), Colors.blue),
+      DriverStatus.approved => (tr('status.badge_approved'), Colors.green),
+      DriverStatus.rejected => (tr('status.badge_rejected'), Colors.red),
+      DriverStatus.suspended => (tr('status.badge_suspended'), Colors.redAccent),
     };
 
     return Container(

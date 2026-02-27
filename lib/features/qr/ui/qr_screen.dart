@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import '../../../shared/widgets/app_scaffold.dart';
 
@@ -7,20 +8,20 @@ class QrScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const AppScaffold(
-      title: 'QR',
+    return AppScaffold(
+      title: tr('qr.title'),
       body: Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.qr_code_scanner, size: 72),
-            SizedBox(height: 12),
+            const Icon(Icons.qr_code_scanner, size: 72),
+            const SizedBox(height: 12),
             Text(
-              'Herramientas QR',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+              tr('qr.tools_title'),
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
             ),
-            SizedBox(height: 6),
-            Text('Use esta página para acciones rápidas de escaneo QR.'),
+            const SizedBox(height: 6),
+            Text(tr('qr.subtitle')),
           ],
         ),
       ),

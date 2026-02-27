@@ -1,5 +1,13 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../../shared/widgets/app_scaffold.dart';
+
+enum FailureReason {
+  customerUnavailable,
+  wrongAddress,
+  customerRejected,
+  otherNeedsNote,
+}
 
 class FailedDeliveryScreen extends StatefulWidget {
   final String routeId;
@@ -16,7 +24,7 @@ class FailedDeliveryScreen extends StatefulWidget {
 }
 
 class _FailedDeliveryScreenState extends State<FailedDeliveryScreen> {
-  String reason = 'Cliente no disponible';
+  FailureReason reason = FailureReason.customerUnavailable;
   final noteController = TextEditingController();
   bool evidenceAdded = false;
 
@@ -28,11 +36,11 @@ class _FailedDeliveryScreenState extends State<FailedDeliveryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final needsNote = reason == 'Otro (requiere nota)';
+    final needsNote = reason == FailureReason.otherNeedsNote;
     final canSubmit = !needsNote || noteController.text.trim().isNotEmpty;
 
     return AppScaffold(
-      title: 'Entrega fallida',
+      title: tr('failed_delivery.title'),
       body: ListView(
         padding: const EdgeInsets.only(bottom: 20),
         children: [
@@ -43,18 +51,40 @@ class _FailedDeliveryScreenState extends State<FailedDeliveryScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Ruta: ${widget.routeId} | Parada: ${widget.stopId}'),
+                  Text(
+                    tr(
+                      'failed_delivery.route_stop',
+                      namedArgs: {
+                        'routeId': widget.routeId,
+                        'stopId': widget.stopId,
+                      },
+                    ),
+                  ),
                   const SizedBox(height: 12),
-                  DropdownButtonFormField<String>(
+                  DropdownButtonFormField<FailureReason>(
                     initialValue: reason,
-                    items: const [
-                      'Cliente no disponible',
-                      'Dirección incorrecta',
-                      'Rechazado por el cliente',
-                      'Otro (requiere nota)',
-                    ].map((s) => DropdownMenuItem(value: s, child: Text(s))).toList(),
+                    items: [
+                      DropdownMenuItem(
+                        value: FailureReason.customerUnavailable,
+                        child: Text(tr('failed_delivery.reason_customer_unavailable')),
+                      ),
+                      DropdownMenuItem(
+                        value: FailureReason.wrongAddress,
+                        child: Text(tr('failed_delivery.reason_wrong_address')),
+                      ),
+                      DropdownMenuItem(
+                        value: FailureReason.customerRejected,
+                        child: Text(tr('failed_delivery.reason_customer_rejected')),
+                      ),
+                      DropdownMenuItem(
+                        value: FailureReason.otherNeedsNote,
+                        child: Text(tr('failed_delivery.reason_other_needs_note')),
+                      ),
+                    ],
                     onChanged: (v) => setState(() => reason = v ?? reason),
-                    decoration: const InputDecoration(labelText: 'Motivo'),
+                    decoration: InputDecoration(
+                      labelText: tr('failed_delivery.reason_label'),
+                    ),
                   ),
                   const SizedBox(height: 12),
                   TextField(
@@ -62,8 +92,9 @@ class _FailedDeliveryScreenState extends State<FailedDeliveryScreen> {
                     onChanged: (_) => setState(() {}),
                     maxLines: 3,
                     decoration: InputDecoration(
-                      labelText:
-                          needsNote ? 'Nota (requerida)' : 'Nota (opcional)',
+                      labelText: needsNote
+                          ? tr('failed_delivery.note_required')
+                          : tr('failed_delivery.note_optional'),
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -72,12 +103,15 @@ class _FailedDeliveryScreenState extends State<FailedDeliveryScreen> {
                       OutlinedButton.icon(
                         onPressed: () => setState(() => evidenceAdded = true),
                         icon: const Icon(Icons.photo_camera_outlined),
-                        label:
-                            Text(evidenceAdded ? 'Evidencia agregada' : 'Agregar foto'),
+                        label: Text(
+                          evidenceAdded
+                              ? tr('failed_delivery.evidence_added')
+                              : tr('failed_delivery.add_photo'),
+                        ),
                       ),
                       const SizedBox(width: 10),
                       Text(
-                        'Política de evidencia configurable',
+                        tr('failed_delivery.evidence_policy'),
                         style: TextStyle(color: Colors.grey.shade700),
                       ),
                     ],
@@ -89,13 +123,11 @@ class _FailedDeliveryScreenState extends State<FailedDeliveryScreen> {
                       onPressed: !canSubmit
                           ? null
                           : () => ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text(
-                                    'Fallo enviado. Incidente creado vía API.',
-                                  ),
+                                SnackBar(
+                                  content: Text(tr('failed_delivery.submitted_mock')),
                                 ),
                               ),
-                      child: const Text('Enviar fallo'),
+                      child: Text(tr('failed_delivery.submit_failure')),
                     ),
                   ),
                 ],

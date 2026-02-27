@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:go_router/go_router.dart';
 import '../../../app/navigation/app_routes.dart';
 import '../../../shared/widgets/app_scaffold.dart';
@@ -22,7 +23,7 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
-      title: 'Entrega - ${widget.stopId}',
+      title: tr('delivery.title', namedArgs: {'stopId': widget.stopId}),
       body: ListView(
         padding: const EdgeInsets.only(bottom: 20),
         children: [
@@ -30,15 +31,19 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
           Card(
             child: ListTile(
               leading: const Icon(Icons.qr_code_scanner_outlined),
-              title: const Text('Escaneo previo a la entrega obligatorio'),
+              title: Text(tr('delivery.pre_scan_required_title')),
               subtitle: Text(
                 preDeliveryScanDone
-                    ? 'Escaneo completado. Puede continuar.'
-                    : 'Debe escanear el código de barras/QR del paquete antes de seleccionar el estado.',
+                    ? tr('delivery.pre_scan_done')
+                    : tr('delivery.pre_scan_needed'),
               ),
               trailing: FilledButton(
                 onPressed: () => setState(() => preDeliveryScanDone = true),
-                child: Text(preDeliveryScanDone ? 'Escaneado' : 'Escanear ahora'),
+                child: Text(
+                  preDeliveryScanDone
+                      ? tr('delivery.scanned')
+                      : tr('delivery.scan_now'),
+                ),
               ),
             ),
           ),
@@ -48,22 +53,22 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Estado de la entrega',
-                    style: TextStyle(fontWeight: FontWeight.w700),
+                  Text(
+                    tr('delivery.status_section_title'),
+                    style: const TextStyle(fontWeight: FontWeight.w700),
                   ),
                   const SizedBox(height: 10),
                   SegmentedButton<DeliveryDecision>(
-                    segments: const [
+                    segments: [
                       ButtonSegment(
                         value: DeliveryDecision.delivered,
-                        icon: Icon(Icons.check_circle_outline),
-                        label: Text('Entregado'),
+                        icon: const Icon(Icons.check_circle_outline),
+                        label: Text(tr('delivery.delivered')),
                       ),
                       ButtonSegment(
                         value: DeliveryDecision.failed,
-                        icon: Icon(Icons.error_outline),
-                        label: Text('Fallido'),
+                        icon: const Icon(Icons.error_outline),
+                        label: Text(tr('delivery.failed')),
                       ),
                     ],
                     selected: {decision},
@@ -73,7 +78,7 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    'Los cambios de estado después del envío requieren autorización del supervisor.',
+                    tr('delivery.supervisor_note'),
                     style: TextStyle(color: Colors.grey.shade700),
                   ),
                   const SizedBox(height: 12),
@@ -99,7 +104,7 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
                                 );
                               }
                             },
-                      child: const Text('Continuar'),
+                      child: Text(tr('common.continue')),
                     ),
                   ),
                 ],

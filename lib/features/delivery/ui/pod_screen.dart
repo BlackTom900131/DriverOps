@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../../shared/widgets/app_scaffold.dart';
 
 class PodScreen extends StatefulWidget {
@@ -19,15 +20,20 @@ class _PodScreenState extends State<PodScreen> {
   Widget build(BuildContext context) {
     final canSubmit = photoAdded && signatureAdded;
     return AppScaffold(
-      title: 'Prueba de entrega',
+      title: tr('pod.title'),
       body: ListView(
         padding: const EdgeInsets.only(bottom: 20),
         children: [
           const SizedBox(height: 8),
           Card(
             child: ListTile(
-              title: const Text('Evidencia de POD'),
-              subtitle: Text('Ruta: ${widget.routeId} | Parada: ${widget.stopId}'),
+              title: Text(tr('pod.evidence_title')),
+              subtitle: Text(
+                tr('pod.route_stop', namedArgs: {
+                  'routeId': widget.routeId,
+                  'stopId': widget.stopId,
+                }),
+              ),
             ),
           ),
           Card(
@@ -35,33 +41,41 @@ class _PodScreenState extends State<PodScreen> {
               children: [
                 ListTile(
                   leading: const Icon(Icons.photo_camera_outlined),
-                  title: const Text('Captura de foto (obligatoria)'),
+                  title: Text(tr('pod.photo_required')),
                   trailing: OutlinedButton(
                     onPressed: () => setState(() => photoAdded = true),
-                    child: Text(photoAdded ? 'Agregado' : 'Capturar'),
+                    child: Text(
+                      photoAdded ? tr('pod.added') : tr('pod.capture'),
+                    ),
                   ),
                 ),
                 const Divider(height: 1),
                 ListTile(
                   leading: const Icon(Icons.draw_outlined),
-                  title: const Text('Firma del destinatario (obligatoria)'),
+                  title: Text(tr('pod.signature_required')),
                   trailing: OutlinedButton(
                     onPressed: () => setState(() => signatureAdded = true),
-                    child: Text(signatureAdded ? 'Agregado' : 'Firmar'),
+                    child: Text(
+                      signatureAdded ? tr('pod.added') : tr('pod.sign'),
+                    ),
                   ),
                 ),
                 const Divider(height: 1),
-                const Padding(
-                  padding: EdgeInsets.all(16),
+                Padding(
+                  padding: const EdgeInsets.all(16),
                   child: TextField(
-                    decoration: InputDecoration(labelText: 'ID del destinatario'),
+                    decoration: InputDecoration(
+                      labelText: tr('pod.recipient_id'),
+                    ),
                   ),
                 ),
-                const Padding(
-                  padding: EdgeInsets.fromLTRB(16, 0, 16, 16),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                   child: TextField(
                     maxLines: 3,
-                    decoration: InputDecoration(labelText: 'Notas (opcional)'),
+                    decoration: InputDecoration(
+                      labelText: tr('pod.notes_optional'),
+                    ),
                   ),
                 ),
               ],
@@ -73,11 +87,11 @@ class _PodScreenState extends State<PodScreen> {
               onPressed: !canSubmit
                   ? null
                   : () => ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Entregado con evidencia POD.'),
+                        SnackBar(
+                          content: Text(tr('pod.submitted_mock')),
                         ),
                       ),
-              child: const Text('Enviar POD'),
+              child: Text(tr('pod.submit')),
             ),
           ),
         ],

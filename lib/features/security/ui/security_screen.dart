@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import '../../../shared/widgets/app_scaffold.dart';
 
@@ -8,29 +9,29 @@ class SecurityScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
-      title: 'Seguridad del usuario',
+      title: tr('security.title'),
       body: ListView(
         padding: const EdgeInsets.only(top: 8, bottom: 16),
-        children: const [
+        children: [
           Card(
             child: ListTile(
-              leading: Icon(Icons.lock_outline),
-              title: Text('Cambiar contraseña'),
-              subtitle: Text('Actualice la contraseña de su cuenta con regularidad.'),
+              leading: const Icon(Icons.lock_outline),
+              title: Text(tr('security.change_password_title')),
+              subtitle: Text(tr('security.change_password_subtitle')),
             ),
           ),
           Card(
             child: ListTile(
-              leading: Icon(Icons.phonelink_lock_outlined),
-              title: Text('Autenticación de dos factores'),
-              subtitle: Text('Habilítela para mayor protección de la cuenta.'),
+              leading: const Icon(Icons.phonelink_lock_outlined),
+              title: Text(tr('security.two_factor_title')),
+              subtitle: Text(tr('security.two_factor_subtitle')),
             ),
           ),
           Card(
             child: ListTile(
-              leading: Icon(Icons.history_toggle_off_outlined),
-              title: Text('Actividad de inicio de sesión'),
-              subtitle: Text('Revise sesiones y dispositivos recientes.'),
+              leading: const Icon(Icons.history_toggle_off_outlined),
+              title: Text(tr('security.login_activity_title')),
+              subtitle: Text(tr('security.login_activity_subtitle')),
             ),
           ),
         ],

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../../app/navigation/app_routes.dart';
 
 import '../state/auth_state.dart';
@@ -60,29 +61,29 @@ class _LoginDetailsScreenState extends ConsumerState<LoginDetailsScreen> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          'Bienvenido a nuestra empresa.',
+                          tr('login_details.welcome_title'),
                           style: Theme.of(context).textTheme.headlineSmall,
                         ),
                         const SizedBox(height: 12),
                         TextFormField(
                           controller: _email,
-                          decoration: const InputDecoration(
-                            labelText: 'Correo electrónico',
+                          decoration: InputDecoration(
+                            labelText: tr('login_details.email_label'),
                           ),
                           validator: (v) => (v == null || !v.contains('@'))
-                              ? 'Correo inválido'
+                              ? tr('login_details.email_invalid')
                               : null,
                         ),
                         const SizedBox(height: 12),
                         TextFormField(
                           controller: _pass,
-                          decoration: const InputDecoration(
-                            labelText: 'Contraseña',
+                          decoration: InputDecoration(
+                            labelText: tr('login_details.password_label'),
                           ),
                           obscureText: true,
                           validator: (v) =>
                               (v == null || v.length < 3)
-                                  ? 'Demasiado corta'
+                                  ? tr('login_details.password_too_short')
                                   : null,
                         ),
                         const SizedBox(height: 16),
@@ -96,7 +97,7 @@ class _LoginDetailsScreenState extends ConsumerState<LoginDetailsScreen> {
                                   .mockLogin(_name.text.trim());
                               context.go(AppRoutes.home);
                             },
-                            child: const Text('Iniciar sesión'),
+                            child: Text(tr('login_details.login_button')),
                           ),
                         ),
                         const SizedBox(height: 10),
@@ -105,14 +106,14 @@ class _LoginDetailsScreenState extends ConsumerState<LoginDetailsScreen> {
                           crossAxisAlignment: WrapCrossAlignment.center,
                           children: [
                             Text(
-                              'Si aún no te registraste, ',
+                              tr('login_details.signup_prompt'),
                               style: Theme.of(context).textTheme.bodyMedium
                                   ?.copyWith(color: const Color(0xFF5F6368)),
                             ),
                             InkWell(
                               onTap: () => context.go(AppRoutes.registration),
-                              child: const Text(
-                                'Regístrate',
+                              child: Text(
+                                tr('login_details.signup_action'),
                                 style: TextStyle(
                                   color: Color(0xFF0A84FF),
                                   fontWeight: FontWeight.w700,

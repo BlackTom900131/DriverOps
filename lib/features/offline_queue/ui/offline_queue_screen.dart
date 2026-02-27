@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../shared/widgets/app_scaffold.dart';
 import '../state/offline_queue_state.dart';
@@ -12,7 +13,7 @@ class OfflineQueueScreen extends ConsumerWidget {
     final notifier = ref.read(offlineQueueProvider.notifier);
 
     return AppScaffold(
-      title: 'Cola sin conexión',
+      title: tr('offline_queue.title'),
       body: ListView(
         padding: const EdgeInsets.only(bottom: 20),
         children: [
@@ -22,27 +23,38 @@ class OfflineQueueScreen extends ConsumerWidget {
               leading: Icon(
                 state.isOffline ? Icons.cloud_off_outlined : Icons.cloud_done_outlined,
               ),
-              title: Text(state.isOffline ? 'Modo: SIN CONEXIÓN' : 'Modo: EN LÍNEA'),
-              subtitle: Text('Eventos pendientes: ${state.pendingEvents}'),
+              title: Text(
+                state.isOffline
+                    ? tr('offline_queue.mode_offline')
+                    : tr('offline_queue.mode_online'),
+              ),
+              subtitle: Text(
+                tr('offline_queue.pending_events', namedArgs: {
+                  'count': state.pendingEvents.toString(),
+                }),
+              ),
               trailing: FilledButton(
                 onPressed: notifier.toggleOffline,
-                child: Text(state.isOffline ? 'Conectarse' : 'Desconectarse'),
+                child: Text(
+                  state.isOffline
+                      ? tr('offline_queue.connect')
+                      : tr('offline_queue.disconnect'),
+                ),
               ),
             ),
           ),
           Card(
             child: ListTile(
               leading: const Icon(Icons.sync_outlined),
-              title: const Text('Sincronizar cola ahora'),
-              subtitle:
-                  const Text('Los reintentos y conflictos dependen del backend.'),
+              title: Text(tr('offline_queue.sync_now')),
+              subtitle: Text(tr('offline_queue.sync_subtitle')),
               onTap: state.isOffline || state.pendingEvents == 0
                   ? null
                   : () {
                       notifier.clear();
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Cola sincronizada correctamente (simulado).'),
+                        SnackBar(
+                          content: Text(tr('offline_queue.synced_mock')),
                         ),
                       );
                     },
@@ -51,14 +63,14 @@ class OfflineQueueScreen extends ConsumerWidget {
           Card(
             child: ListTile(
               leading: const Icon(Icons.add),
-              title: const Text('Agregar evento simulado en cola'),
+              title: Text(tr('offline_queue.add_mock_event')),
               onTap: notifier.addMockEvent,
             ),
           ),
           Card(
             child: ListTile(
               leading: const Icon(Icons.delete_outline),
-              title: const Text('Limpiar cola local'),
+              title: Text(tr('offline_queue.clear_local_queue')),
               onTap: notifier.clear,
             ),
           ),

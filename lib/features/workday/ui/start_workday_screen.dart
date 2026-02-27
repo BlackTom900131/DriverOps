@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../app/navigation/app_routes.dart';
@@ -21,7 +22,7 @@ class _StartWorkdayScreenState extends ConsumerState<StartWorkdayScreen> {
   Widget build(BuildContext context) {
     final offline = ref.watch(offlineQueueProvider).isOffline;
     return AppScaffold(
-      title: 'Iniciar jornada',
+      title: tr('start_workday.title'),
       body: ListView(
         padding: const EdgeInsets.only(bottom: 20),
         children: [
@@ -32,29 +33,27 @@ class _StartWorkdayScreenState extends ConsumerState<StartWorkdayScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Antes de comenzar',
-                    style: TextStyle(fontWeight: FontWeight.w700),
+                  Text(
+                    tr('start_workday.before_starting'),
+                    style: const TextStyle(fontWeight: FontWeight.w700),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     offline
-                        ? 'Modo sin conexión activo: el evento de inicio se pondrá en cola.'
-                        : 'Modo en línea: el evento de inicio se enviará de inmediato.',
+                        ? tr('start_workday.offline_mode')
+                        : tr('start_workday.online_mode'),
                   ),
                   const SizedBox(height: 12),
                   CheckboxListTile(
                     value: confirm,
                     onChanged: (v) => setState(() => confirm = v ?? false),
-                    title: const Text(
-                      'Confirmo que estoy iniciando mi jornada ahora',
-                    ),
+                    title: Text(tr('start_workday.confirm_now')),
                     controlAffinity: ListTileControlAffinity.leading,
                   ),
                   SwitchListTile(
                     value: gpsValidation,
                     onChanged: (v) => setState(() => gpsValidation = v),
-                    title: const Text('Validación de GPS habilitada'),
+                    title: Text(tr('start_workday.gps_validation_enabled')),
                   ),
                   const SizedBox(height: 12),
                   SizedBox(
@@ -67,7 +66,7 @@ class _StartWorkdayScreenState extends ConsumerState<StartWorkdayScreen> {
                               ref.read(offlineQueueProvider.notifier).addMockEvent();
                               context.go(AppRoutes.home);
                             },
-                      child: const Text('Iniciar jornada'),
+                      child: Text(tr('start_workday.start_button')),
                     ),
                   ),
                 ],

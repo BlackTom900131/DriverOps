@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:go_router/go_router.dart';
 import '../../app/navigation/app_routes.dart';
 
@@ -30,31 +31,31 @@ class AppBottomBar extends StatelessWidget {
             return;
         }
       },
-      destinations: const [
+      destinations: [
         NavigationDestination(
-          icon: Icon(Icons.home_outlined),
-          selectedIcon: Icon(Icons.home),
-          label: 'Inicio',
+          icon: const Icon(Icons.home_outlined),
+          selectedIcon: const Icon(Icons.home),
+          label: tr('nav.home'),
         ),
         NavigationDestination(
-          icon: Icon(Icons.alt_route_outlined),
-          selectedIcon: Icon(Icons.alt_route),
-          label: 'Rutas',
+          icon: const Icon(Icons.alt_route_outlined),
+          selectedIcon: const Icon(Icons.alt_route),
+          label: tr('nav.routes'),
         ),
         NavigationDestination(
-          icon: Icon(Icons.qr_code_scanner_outlined),
-          selectedIcon: Icon(Icons.qr_code_scanner),
-          label: 'QR',
+          icon: const Icon(Icons.qr_code_scanner_outlined),
+          selectedIcon: const Icon(Icons.qr_code_scanner),
+          label: tr('nav.qr'),
         ),
         NavigationDestination(
-          icon: Icon(Icons.support_agent_outlined),
-          selectedIcon: Icon(Icons.support_agent),
-          label: 'Contacto',
+          icon: const Icon(Icons.support_agent_outlined),
+          selectedIcon: const Icon(Icons.support_agent),
+          label: tr('nav.messages'),
         ),
         NavigationDestination(
-          icon: Icon(Icons.person_outline),
-          selectedIcon: Icon(Icons.person),
-          label: 'Perfil',
+          icon: const Icon(Icons.person_outline),
+          selectedIcon: const Icon(Icons.person),
+          label: tr('nav.profile'),
         ),
       ],
     );

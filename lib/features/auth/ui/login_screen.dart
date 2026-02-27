@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:video_player/video_player.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../../app/navigation/app_routes.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -12,6 +13,20 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   late final VideoPlayerController _videoController;
+  static final Map<Locale, String> _languageLabels = {
+    Locale('en'): 'English',
+    Locale('es'): 'Español',
+    Locale('ja'): '日本語',
+    Locale('fr'): 'Français',
+    Locale('de'): 'Deutsch',
+    Locale('pt'): 'Português',
+    Locale('it'): 'Italiano',
+    Locale('zh'): '中文',
+    Locale('ko'): '한국어',
+    Locale('ar'): 'العربية',
+    Locale('hi'): 'हिन्दी',
+    Locale('ru'): 'Русский',
+  };
 
   @override
   void initState() {
@@ -34,6 +49,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final locale = context.locale;
     return Scaffold(
       body: Stack(
         fit: StackFit.expand,
@@ -63,6 +79,16 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: _LanguageSelector(
+                      locale: locale,
+                      onChanged: (value) {
+                        if (value == null) return;
+                        context.setLocale(value);
+                      },
+                    ),
+                  ),
                   Center(
                     child: Container(
                       width: 150,
@@ -84,7 +110,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 12),
                   const Spacer(),
                   Text(
-                    'Bienvenido a nuestra empresa.',
+                    tr('login.welcome_title'),
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                       color: const Color(0xFFEAF4FF),
@@ -103,7 +129,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    'Rutas más inteligentes. Entregas más seguras. Mayores ingresos con Nuestro Transporte.',
+                    tr('login.welcome_subtitle'),
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: const Color(0xFFDCEBFF),
@@ -134,8 +160,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           borderRadius: BorderRadius.zero,
                         ),
                       ),
-                      label: const Text(
-                        'Iniciar sesión',
+                      label: Text(
+                        tr('login.login_button'),
                         style: TextStyle(
                           fontSize: 17,
                           fontWeight: FontWeight.w800,
@@ -149,6 +175,47 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _LanguageSelector extends StatelessWidget {
+  final Locale locale;
+  final ValueChanged<Locale?> onChanged;
+
+  const _LanguageSelector({required this.locale, required this.onChanged});
+
+  @override
+  Widget build(BuildContext context) {
+    final supported = context.supportedLocales;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: Colors.black.withValues(alpha: 0.35),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.25)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        child: DropdownButtonHideUnderline(
+          child: DropdownButton<Locale>(
+            value: supported.contains(locale) ? locale : supported.first,
+            dropdownColor: const Color(0xFF1C1C1C),
+            iconEnabledColor: Colors.white,
+            items: supported
+                .map(
+                  (l) => DropdownMenuItem(
+                    value: l,
+                    child: Text(
+                      _LoginScreenState._languageLabels[l] ?? l.languageCode,
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ),
+                )
+                .toList(),
+            onChanged: onChanged,
+          ),
+        ),
       ),
     );
   }
